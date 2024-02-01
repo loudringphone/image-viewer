@@ -1,0 +1,47 @@
+<div class="container">
+<% if !flash[:notice].blank? %>
+   <div>
+      <%= flash[:notice] %>
+   </div>
+<% end %>
+
+<br>
+
+<%= link_to "New Image", new_image_path %>
+<br>
+<br>
+
+<table>
+   <thead>
+      <tr>
+         <th>Preview</th>
+         <th>Title</th>
+         <th>Upload time</th>
+         <th>Actions</th>
+      </tr>
+   </thead>
+
+   <tbody>
+      <% @images.each do |image| %>
+
+         <tr>
+            <td><img src="<%= image.attachment_url %>" alt="<%= image.title %>"></td>
+            <td><%= image.title %></td>
+            <td><%= image.uploaded_time.strftime("%Y-%m-%d %H:%M:%S") %></td>
+            <td>
+              <div class='flex'>
+                <%= link_to "View", image_path(image) %>
+                <form action="<%= image_path(image) %>" method="post" class="delete-form">
+                  <%= csrf_meta_tags %>
+                  <%= hidden_field_tag :_method, :delete %>
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+         </tr>
+
+      <% end %>
+   </tbody>
+
+</table>
+</div>

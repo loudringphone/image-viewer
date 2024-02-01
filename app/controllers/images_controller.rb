@@ -1,0 +1,35 @@
+class ImagesController < ApplicationController
+  def index
+    @images = Image.all
+  end
+
+  def show
+    @image = Image.find(params[:id])
+  end
+
+  def new
+      @image = Image.new
+  end
+
+  def create
+      @image = Image.new(image_params)
+      @image.uploaded_time = Time.now
+      if @image.save
+        redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
+      else
+        render :new, status: :unprocessable_entity
+      end
+  end
+
+  def destroy
+    @image = Image.find(params[:id])
+    @image.destroy
+    redirect_to images_path, notice:  "#{@image.title} was successfully deleted."
+  end
+
+  private
+
+  def image_params
+    params.require(:image).permit(:title, :attachment)
+  end
+end

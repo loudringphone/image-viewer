@@ -1,0 +1,5 @@
+<h1>Title: <%= @image.title %></h1>
+
+<p>Uploaded Time: <%= @image.uploaded_time.strftime("%Y-%m-%d %H:%M:%S") %></p>
+
+<img src="<%= @image.attachment_url %>" alt="<%= @image.title %>">

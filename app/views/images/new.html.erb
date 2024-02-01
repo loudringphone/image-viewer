@@ -1,0 +1,23 @@
+<div class="container">
+<% if @image.errors.any? %>
+    <p><% @image.errors.to_s %></p>
+   <div>
+      <ul>
+         <% @image.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+         <% end %>
+      </ul>
+  </div>
+<% end %>
+<div>
+   <%= form_with model: @image, local: true, html: { multipart: true } do |f| %>
+      <%= f.label :title %>
+      <%= f.text_field :title %>
+      <br><br>
+      <%= f.label :attachment %>
+      <%= f.file_field :attachment %>
+      <br>
+      <%= f.submit "Save" %>
+   <% end %>
+</div>
+</div>
