@@ -8,11 +8,14 @@ class ImagesController < ApplicationController
   def show
     @image = Image.find(params[:id])
     visitor_count = Visitor.viewed_image_within_last_minute(params[:id]).count
-    if visitor_count % 2 == 0
-      @visitor_msg = "#{visitor_count} visitors are currently viewing this image."
-    else
-      @visitor_msg = "#{visitor_count} visitor is currently viewing this image."
-    end
+    @visitor_msg = "#{visitor_count} #{'visitor'.pluralize(visitor_count)} #{'is'.pluralize(visitor_count)} currently viewing this image."
+  end
+
+  def visitor_count
+    retrieve_visitor()
+    visitor_count = Visitor.viewed_image_within_last_minute(params[:id]).count
+    visitor_count_msg = "#{visitor_count} #{'visitor'.pluralize(visitor_count)} #{'is'.pluralize(visitor_count)} currently viewing this image."
+    render json: { visitor_count_msg: }
   end
 
   def new
