@@ -1,15 +1,21 @@
 import consumer from "channels/consumer"
 
-consumer.subscriptions.create("VisitorChannel", {
-  connected() {
-    console.log("Connected to VisitorChannel");
-  },
+document.addEventListener("DOMContentLoaded", () => {
+  const divElement = document.querySelector("[data-controller='visitor']");
+  const imageId = divElement.getAttribute("data-image-id");
+  consumer.subscriptions.create({ channel: "VisitorChannel", id: imageId }, {
+    connected() {
+      console.log(`Connected to VisitorChannel ${imageId}`);
+    },
 
-  disconnected() {
-    // Called when the subscription has been terminated by the server
-  },
+    disconnected() {
+      console.log(`Disconnected! ${imageId}`);
+      // Called when the subscription has been terminated by the server
+    },
 
-  received(data) {
-    // Called when there's incoming data on the websocket for this channel
-  }
+    received(data) {
+      console.log("Received data:", data);
+      // Handle received data here
+    }
+  });
 });

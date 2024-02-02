@@ -25,7 +25,7 @@
       <% @images.each do |image| %>
 
          <tr>
-            <td><img src="<%= image.attachment_url %>" alt="<%= image.title %>"></td>
+            <td><img class="h-[50px]" src="<%= image.attachment_url %>" alt="<%= image.title %>"></td>
             <td><%= image.title %></td>
             <td><%= image.uploaded_time.strftime("%Y-%m-%d %H:%M:%S") %></td>
             <td>

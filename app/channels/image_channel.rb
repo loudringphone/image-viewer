@@ -6,8 +6,4 @@ class ImageChannel < ApplicationCable::Channel
   def unsubscribed
     # Any cleanup needed when channel is unsubscribed
   end
-
-  def received(data)
-    ActionCable.server.broadcast "image_channel", message: data["message"]
-  end
 end

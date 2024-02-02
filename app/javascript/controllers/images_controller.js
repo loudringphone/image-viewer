@@ -24,7 +24,6 @@ export default class extends Controller {
         return response.json();
       })
       .then(data => {
-        console.log(data)
         let html = '<tbody>'
         html = html + data.map(image => `
           <tr>
