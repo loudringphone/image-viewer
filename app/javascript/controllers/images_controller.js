@@ -29,7 +29,7 @@ export default class extends Controller {
           <tr>
             <td><img src="${image.attachment.url}" alt="${image.title}"></td>
             <td>${image.title}</td>
-            <td>${new Date(image.uploaded_time).toISOString().slice(0, 19).replace('T', ' ')}</td>
+            <td>${new Date(image.uploaded_time).toLocaleDateString('en', { day: '2-digit', month: 'short', year: '2-digit' })} ${uploadedTime.toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
             <td>
               <div class='flex'>
                 <a href="/images/${image.id}">View</a>

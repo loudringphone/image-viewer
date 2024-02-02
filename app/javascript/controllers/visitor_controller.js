@@ -8,7 +8,7 @@ export default class extends Controller {
     const msgElement = this.msgTarget;
     setTimeout(() => {
       msgElement.style.visibility = 'visible'
-    }, 100);
+    }, 275);
     const imageId = this.element.dataset.imageId;
     consumer.subscriptions.create({ channel: "VisitorChannel", id: imageId }, {
       received: (data) => {

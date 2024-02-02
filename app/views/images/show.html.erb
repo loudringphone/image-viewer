@@ -1,7 +1,7 @@
 <div class="width-100" data-controller='visitor' data-image-id="<%= @image.id %>">
-  <h1 class="text-red-300">Title: <%= @image.title %></h1>
+  <h1 class="text-green-500 font-bold text-2xl">Title: <%= @image.title %></h1>
 
-  <p>Uploaded Time: <%= @image.uploaded_time.strftime("%Y-%m-%d %H:%M:%S") %></p>
-  <img class="max-w-[500px]" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
+  <h2 class='text-sm'>Uploaded Time: <%= @image.uploaded_time.strftime("%d-%b-%y %H:%M:%S") %></p>
+  <img class="w-[350px]" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
   <p data-visitor-target="msg" class='invisible'><%= @user_count_msg %></p>
 </div>

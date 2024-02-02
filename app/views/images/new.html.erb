@@ -1,23 +1,58 @@
-<div class="container">
-<% if @image.errors.any? %>
-    <p><% @image.errors.to_s %></p>
-   <div>
-      <ul>
-         <% @image.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-         <% end %>
-      </ul>
-  </div>
-<% end %>
 <div>
-   <%= form_with model: @image, local: true, html: { multipart: true } do |f| %>
-      <%= f.label :title %>
-      <%= f.text_field :title %>
-      <br><br>
-      <%= f.label :attachment %>
-      <%= f.file_field :attachment, accept: "image/*" %>
-      <br>
-      <%= f.submit "Save" %>
+   <% if @image.errors.any? %>
+      <div class='text-sm text-red-400'>
+         <ul>
+            <% @image.errors.full_messages.each do |msg| %>
+               <li>Error: <%= msg %></li>
+            <% end %>
+         </ul>
+      </div>
    <% end %>
+
+   <div class='relative w-[300px] rounded-lg border border-gray-200 bg-white text-gray-950 shadow-sm dark:border-gray-800 bg-gray-300'>
+      <%= form_with model: @image, local: true, html: { multipart: true }, id: 'image-form', class: 'flex flex-col items-center p-4 pb-0' do |f| %>
+         <div class='flex mb-3'>
+            <%= f.label :title, class: 'self-center mr-2' %>
+            <%= f.text_field :title, class: 'rounded-xl py-[1.5px]' %>
+         </div>
+         <%= f.file_field :attachment, accept: "image/*", class: 'text-sm whitespace-nowrap overflow-hidden text-last-center', onchange: 'previewImage(this)' %>
+         <div class='h-[225px] py-4'>
+            <img id="preview-image" class='rounded-xl' />
+         </div>
+         <%= f.submit "Save", class: 'w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl cursor-pointer' %>
+      <% end %>
+      <div class='absolute bottom-0 opacity-50 w-[300px] text-white h-[50px] bg-gray-400 rounded-bl-xl rounded-br-xl' id='submit-mask'></div>
+   </div>
 </div>
-</div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('image-form');
+    const titleField = document.getElementById('image_title');
+    const attachmentField = document.getElementById('image_attachment');
+
+    const submitMask = document.getElementById('submit-mask');
+
+    function updateSubmitButton() {
+      if (titleField.value.trim() !== '' && attachmentField.value.trim() !== '') {
+        submitMask.style.display = 'none'
+      } else {
+         submitMask.style.display = 'block'
+      }
+    }
+
+    titleField.addEventListener('input', updateSubmitButton);
+    attachmentField.addEventListener('input', updateSubmitButton);
+  });
+
+  function previewImage(input) {
+    const preview = document.getElementById('preview-image');
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      preview.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+</script>
