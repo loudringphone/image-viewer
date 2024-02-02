@@ -5,6 +5,8 @@ ruby "3.2.2"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.3"
 
+gem 'redis'
+
 gem 'carrierwave'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "images#index"
-
+  get '/images' => "images#index"
+  get '/images_json' => "images#json"
   get '/images/:id/visitor_count', to: 'images#visitor_count'
 end
