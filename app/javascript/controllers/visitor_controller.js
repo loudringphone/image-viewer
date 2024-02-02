@@ -1,14 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
+import consumer from "channels/consumer"
 
 // Connects to data-controller="visitor"
 export default class extends Controller {
   static targets = ["msg"];
-
   connect() {
-    this.fetchVisitorCount();
-    this.startFetchingInterval();
+    const msgElement = this.msgTarget;
+    consumer.subscriptions.create("ImageChannel", {
+      received: (data) => {
+        const visitorCount = data.visitor_count;
+        const message = `${visitorCount} ${visitorCount !== 1 ? 'visitors' : 'visitor'} currently viewing this image.`;
+        msgElement.textContent = message;
+        setTimeout(() => {
+          this.fetchVisitorCount();
+        }, 5000);
+      }
+    });
   }
-
   fetchVisitorCount() {
     const imageId = this.element.dataset.imageId;
     fetch(`/images/${imageId}/visitor_count`)
@@ -19,10 +27,5 @@ export default class extends Controller {
       .catch(error => {
         console.error("Error fetching visitor count:", error);
       });
-  }
-  startFetchingInterval() {
-    this.fetchInterval = setInterval(() => {
-      this.fetchVisitorCount();
-    }, 5000);
   }
 }

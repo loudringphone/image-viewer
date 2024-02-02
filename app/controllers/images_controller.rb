@@ -7,13 +7,14 @@ class ImagesController < ApplicationController
 
   def show
     @image = Image.find(params[:id])
-    visitor_count = Visitor.viewed_image_within_last_minute(params[:id]).count
+    visitor_count = Visitor.viewed_image_within_5_seconds(params[:id]).count
+    ActionCable.server.broadcast('image_channel', { visitor_count: visitor_count })
     @visitor_msg = "#{visitor_count} #{'visitor'.pluralize(visitor_count)} #{'is'.pluralize(visitor_count)} currently viewing this image."
   end
 
   def visitor_count
     retrieve_visitor()
-    visitor_count = Visitor.viewed_image_within_last_minute(params[:id]).count
+    visitor_count = Visitor.viewed_image_within_5_seconds(params[:id]).count
     visitor_count_msg = "#{visitor_count} #{'visitor'.pluralize(visitor_count)} #{'is'.pluralize(visitor_count)} currently viewing this image."
     render json: { visitor_count_msg: }
   end
@@ -26,6 +27,7 @@ class ImagesController < ApplicationController
       @image = Image.new(image_params)
       @image.uploaded_time = Time.now
       if @image.save
+
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else
         render :new, status: :unprocessable_entity
