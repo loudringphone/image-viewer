@@ -15,7 +15,7 @@
       <%= f.text_field :title %>
       <br><br>
       <%= f.label :attachment %>
-      <%= f.file_field :attachment %>
+      <%= f.file_field :attachment, accept: "image/*" %>
       <br>
       <%= f.submit "Save" %>
    <% end %>

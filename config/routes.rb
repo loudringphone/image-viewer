@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get 'sessions/create'
-  get 'sessions/destroy'
   resources :images
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

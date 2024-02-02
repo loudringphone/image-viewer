@@ -1,9 +1,9 @@
-<div data-controller='image' data-image-id="<%= @image.id %>">
+<div data-controller='visitor' data-image-id="<%= @image.id %>">
   <h1>Title: <%= @image.title %></h1>
 
   <p>Uploaded Time: <%= @image.uploaded_time.strftime("%Y-%m-%d %H:%M:%S") %></p>
 
   <img src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
 
-  <p data-target="image.msg"><%= @visitor_msg %></p>
+  <p data-visitor-target="msg"><%= @visitor_msg %></p>
 </div>
