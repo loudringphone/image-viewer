@@ -6,7 +6,7 @@ export default class extends Controller {
   static targets = ["msg"];
   connect() {
     const msgElement = this.msgTarget;
-    consumer.subscriptions.create("ImageChannel", {
+    consumer.subscriptions.create("VisitorChannel", {
       received: (data) => {
         const visitorCount = data.visitor_count;
         const message = `${visitorCount} ${visitorCount !== 1 ? 'visitors' : 'visitor'} currently viewing this image.`;

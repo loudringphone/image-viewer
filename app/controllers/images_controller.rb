@@ -8,7 +8,7 @@ class ImagesController < ApplicationController
   def show
     @image = Image.find(params[:id])
     visitor_count = Visitor.viewed_image_within_5_seconds(params[:id]).count
-    ActionCable.server.broadcast('image_channel', { visitor_count: visitor_count })
+    ActionCable.server.broadcast('visitor_channel', { visitor_count: visitor_count })
     @visitor_msg = "#{visitor_count} #{'visitor'.pluralize(visitor_count)} #{'is'.pluralize(visitor_count)} currently viewing this image."
   end
 

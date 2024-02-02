@@ -1,8 +1,6 @@
 import consumer from "channels/consumer"
 
-window.App = window.App || {};
-
-App.image = consumer.subscriptions.create("ImageChannel", {
+consumer.subscriptions.create("ImageChannel", {
   connected() {
     console.log("Connected to ImageChannel");
   },
