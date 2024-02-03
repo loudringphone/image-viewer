@@ -17,9 +17,9 @@
          </div>
          <%= f.file_field :attachment, accept: "image/*", class: 'text-sm whitespace-nowrap overflow-hidden text-last-center w-[260px]', data: { upload_target: 'attachment', action: 'change->upload#previewImage' } %>
          <div class='h-[225px] py-4'>
-            <img data-upload-target="preview" class='rounded-xl' />
+            <img data-upload-target="preview" class='rounded-l' />
          </div>
-         <%= f.submit "Save", class: 'w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl opacity-50 cursor-pointer pointer-events-none', disabled: true, data: { upload_target: 'submit' } %>
+         <%= f.submit "Save", class: 'mt-8 w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl opacity-50 cursor-pointer pointer-events-none', disabled: true, data: { upload_target: 'submit' } %>
       <% end %>
    </div>
 </div>

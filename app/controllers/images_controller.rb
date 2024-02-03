@@ -41,6 +41,7 @@ class ImagesController < ApplicationController
         ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else
+        @image.title = nil
         render :new, status: :unprocessable_entity
       end
   end
