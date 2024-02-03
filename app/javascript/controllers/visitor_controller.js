@@ -4,48 +4,35 @@ import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static targets = ["msg"];
- 
+
   connect() {
     const msgElement = this.msgTarget;
     setTimeout(() => {
       msgElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    const visitor_id = this.element.dataset.visitorId;
     this.fetchVisitorCount()
 
-    window.addEventListener('turbo:before-cache', function(event) {
-      console.log(this)
-      subscription.perform('unsubscribed', {});
+    window.addEventListener('turbo:before-cache', function() {
+      subscription.disconnected()
     })
-
 
     const subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
       {
         connected: () => {
           console.log(`Connected to VisitorChannel ${imageId}`);
-          subscription.entered(visitor_id)
         },
         disconnected: () => {
+          console.log(`Bye VisitorChannel ${imageId}`);
+          subscription.unsubscribe();
         },
         received: (data) => {
-          if (data.msg === `Someone has entered visitor channel ${imageId}`) {
-            subscription.entered(data.visitor_id)
-          }
-          else if (data.msg === `Image ${imageId} has been destroyed.`) {
+          if (data.msg === `Image ${imageId} has been destroyed.`) {
             alert('This image has been deleted. You will now be redirected to the home page.')
             window.location.href = '/';
           }
           subscription.fetchVisitorCount()
-        },
-
-        entered(visitor_id) {
-          this.perform('entered', { data: visitor_id });
-        },
-
-        left(visitor_id) {
-          this.perform('left', { data: visitor_id });
         },
 
         async fetchVisitorCount () {
@@ -62,6 +49,8 @@ export default class extends Controller {
         }
       }
     );
+    subscription.perform('subscribed', {});
+
   }
   async fetchVisitorCount () {
     const msgElement = this.msgTarget;

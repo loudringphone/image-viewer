@@ -6,13 +6,13 @@
    <% end %>
 
 
-   <table class='text-left border-separate border-spacing-y-5'>
+   <table class='text-left border-separate border-spacing-5'>
       <thead>
          <tr>
-            <th class='w-[80px]'>Preview</th>
-            <th class='w-[250px]'>Title</th>
-            <th class='w-[130px]'>Upload Time</th>
-            <th class='text-center'>Actions</th>
+            <th>Preview</th>
+            <th>Title</th>
+            <th>Upload Time</th>
+            <th>Actions</th>
          </tr>
       </thead>
 
@@ -24,7 +24,7 @@
                      <img class="h-[50px]" src="<%= image.attachment_url %>" alt="<%= image.title %>">
                   </a>
                </td>
-               <td><%= link_to image.title, image_path(image) %></td>
+               <td class='max-w-[350px] whitespace-nowrap overflow-hidden'><%= link_to image.title, image_path(image) %></td>
                <td class='text-xs text-wrap'><%= image.uploaded_time.strftime("%d-%b-%y %H:%M:%S") %></td>
                <td>
                   <form action="<%= image_path(image) %>" method="post" class="delete-form text-center">

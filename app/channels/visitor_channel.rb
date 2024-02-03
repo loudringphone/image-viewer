@@ -1,28 +1,12 @@
 class VisitorChannel < ApplicationCable::Channel
   def subscribed
     stream_from "visitor_channel_#{params[:id]}"
+    update_user_count(connection.current_user.id, true)
   end
 
   def unsubscribed
     stop_stream_from "visitor_channel_#{params[:id]}"
     update_user_count(connection.current_user.id, false)
-  end
-
-  def received(data)
-    case data['action']
-    when 'entered'
-      entered(data)
-    when 'left'
-      left(data)
-    end
-  end
-
-  def entered(data)
-    update_user_count(data['data'], true)
-  end
-
-  def left(data)
-    update_user_count(data['data'], false)
   end
 
   private
