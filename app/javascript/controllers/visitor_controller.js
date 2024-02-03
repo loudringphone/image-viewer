@@ -3,36 +3,70 @@ import consumer from "channels/consumer"
 
 export default class extends Controller {
   static targets = ["msg"];
+
   connect() {
-    this.fetchImageData()
     const msgElement = this.msgTarget;
     setTimeout(() => {
       msgElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    consumer.subscriptions.create({ channel: "VisitorChannel", id: imageId }, {
-      received: (data) => {
-        this.fetchImageData()
-      },
+    const cookie = this.element.dataset.cookie;
+    this.fetchImageData()
+    this.subscription = consumer.subscriptions.create(
+      { channel: "VisitorChannel", id: imageId },
+      {
+        connected: () => {
+          console.log(`Connected to VisitorChannel ${imageId}`);
+          this.subscription.entered(cookie)
+          this.subscription.fetchImageData()
+        },
+        disconnected: () => {
+          this.subscription.left(data.cookie)
+          this.subscription.fetchImageData()
+        },
+        received: (data) => {
+          console.log(data.msg)
+          if (data.msg === `Someone has entered visitor channel ${imageId}`) {
+            this.subscription.entered(data.cookie)
+          }
+          else if (data.msg === `Someone has left visitor channel ${imageId}`) {
+            this.subscription.left(data.cookie)
+          }
+          this.subscription.fetchImageData()
+        },
 
-      connected() {
-        this.fetchImageData()
-      },
+        entered(cookie) {
+          this.perform('entered', { data: cookie });
+          this.fetchImageData()
+        },
 
-      disconnected() {
-        this.fetchImageData()
+        left(cookie) {
+          this.perform('left', { data: cookie });
+          this.fetchImageData()
+        },
+
+        async fetchImageData () {
+          return fetch(`/images/${imageId}/visitor_count`)
+          .then(response => response.json())
+          .then(data => {
+            let userCount = data.length;
+            const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
+            return msgElement.textContent = message
+          })
+          .catch(error => {
+            console.error("Error fetching user count:", error);
+          });
+        }
       }
-    });
+    );
   }
-  async fetchImageData() {
-    const imageId = this.element.dataset.imageId;
+  async fetchImageData () {
     const msgElement = this.msgTarget;
+    const imageId = this.element.dataset.imageId;
     return fetch(`/images/${imageId}/visitor_count`)
     .then(response => response.json())
     .then(data => {
-      const userCount = data.user_count;
-      console.log(`User count for image ${imageId}: ${userCount}`);
-      userCount == 0 ? userCount = 1 : userCount
+      let userCount = data.length;
       const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
       return msgElement.textContent = message
     })

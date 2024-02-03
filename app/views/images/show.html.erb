@@ -1,4 +1,8 @@
-<div class="width-100" data-controller='visitor' data-image-id="<%= @image.id %>">
+<div class="width-100"
+  data-controller='visitor'
+  data-image-id="<%= @image.id %>"
+  data-cookie="<%= @cookie %>"
+>
   <h1 class="text-green-500 font-bold text-2xl">Title: <%= @image.title %></h1>
 
   <h2 class='text-sm'>Uploaded Time: <%= @image.uploaded_time.strftime("%d-%b-%y %H:%M:%S") %></p>

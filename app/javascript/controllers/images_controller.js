@@ -6,7 +6,6 @@ export default class extends Controller {
   static targets = ["tbody"];
 
   connect() {
-    const tbodyElement = this.tbodyTarget;
     consumer.subscriptions.create("ImageChannel", {
       received: (data) => {
         this.fetchImageData()
@@ -16,7 +15,15 @@ export default class extends Controller {
 
   async fetchImageData() {
     const tbodyElement = this.tbodyTarget;
-    return fetch("/images_json")
+    const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+    return fetch("/images_json", {
+      method: "GET",
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        "X-CSRF-Token": csrfToken
+      },
+      credentials: 'same-origin'
+    })
       .then(response => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -27,12 +34,21 @@ export default class extends Controller {
         let html = '<tbody>'
         html = html + data.map(image => `
           <tr>
-            <td><img src="${image.attachment.url}" alt="${image.title}"></td>
-            <td>${image.title}</td>
-            <td>${new Date(image.uploaded_time).toLocaleDateString('en', { day: '2-digit', month: 'short', year: '2-digit' })} ${uploadedTime.toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
+            <td><a href="/images/${image.id}"><img  class="h-[50px]" src="${image.attachment.url}" alt="${image.title}"></a></td>
+            <td><a href="/images/${image.id}">${image.title}</a></td>
+            <td class='text-xs text-wrap'>${new Date(image.uploaded_time)
+              .toLocaleString('en', {
+                day: '2-digit',
+                month: 'short',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+              })}
+            </td>
             <td>
               <div class='flex'>
-                <a href="/images/${image.id}">View</a>
                 <form action="/images/${image.id}" method="post" class="delete-form">
                   <input type="hidden" name="_method" value="delete">
                   <button type="submit" onclick="return confirm('Are you sure you want to delete this image?')">Delete</button>

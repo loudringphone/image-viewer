@@ -10,7 +10,6 @@ consumer.subscriptions.create("ImageChannel", {
   },
 
   received(data) {
-    console.log("Received data:", data);
   },
 
   send(message) {
