@@ -3,12 +3,23 @@ import consumer from "channels/consumer"
 
 // Connects to data-controller="images"
 export default class extends Controller {
-  static targets = ["tbody"];
+  static targets = ["container", "tbody"];
 
   connect() {
+    const containerElement = this.containerTarget;
     consumer.subscriptions.create("ImageChannel", {
       received: (data) => {
         this.fetchImages()
+        const notice = document.querySelector('#notice')
+        if (notice) {
+          notice.remove()
+        }
+        const childElement = document.createElement('div');
+        childElement.classList.add('text-sm', 'text-red-400');
+        childElement.id = 'notice'
+        childElement.innerHTML = `${data.msg.slice(0, -1)} by another user.`;
+        const firstChild = containerElement.firstChild;
+        containerElement.insertBefore(childElement, firstChild);
       }
     });
   }

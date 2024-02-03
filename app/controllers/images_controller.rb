@@ -21,7 +21,7 @@ class ImagesController < ApplicationController
       @image.uploaded_time = Time.now
       if @image.save
         REDIS.set("user_count_#{@image.id}", {user_count: 0}.to_json)
-        ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been created."})
+        ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else
         @image.title = nil
@@ -32,7 +32,7 @@ class ImagesController < ApplicationController
   def destroy
     @image = Image.find(params[:id])
     if @image.destroy
-      ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been destroyed."})
+      ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been destroyed."})
       ActionCable.server.broadcast("visitor_channel_#{@image.id}", { msg: "Image #{@image.id} has been destroyed."})
 
     end

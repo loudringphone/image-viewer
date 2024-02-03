@@ -1,6 +1,6 @@
-<div class="container flex flex-col items-center" data-controller='images'>
+<div class="container flex flex-col items-center" data-controller='images' data-images-target="container">
    <% if !flash[:notice].blank? %>
-      <div class='text-sm text-green-600'>
+      <div id='notice' class='text-sm text-green-500'>
          <%= flash[:notice] %>
       </div>
    <% end %>
