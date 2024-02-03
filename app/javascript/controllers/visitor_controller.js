@@ -13,9 +13,13 @@ export default class extends Controller {
     const imageId = this.element.dataset.imageId;
     this.fetchVisitorCount()
 
-    window.addEventListener('turbo:before-cache', function() {
-      subscription.disconnected()
-    })
+    const handleBeforeCache = () => {
+      if (subscription) {
+        subscription.disconnected();
+      }
+    };
+
+    window.addEventListener('turbo:before-cache', handleBeforeCache)
 
     const subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
@@ -25,29 +29,16 @@ export default class extends Controller {
         },
         disconnected: () => {
           console.log(`Bye VisitorChannel ${imageId}`);
-          // subscription.unsubscribe();
           consumer.subscriptions.remove(subscription)
+          window.removeEventListener('turbo:before-cache', handleBeforeCache)
         },
         received: (data) => {
           if (data.msg === `Image ${imageId} has been destroyed.`) {
             alert('This image has been deleted. You will now be redirected to the home page.')
             window.location.href = '/';
           }
-          subscription.fetchVisitorCount()
+          this.fetchVisitorCount()
         },
-
-        async fetchVisitorCount () {
-          fetch(`/images/${imageId}/user_count`)
-          .then(response => response.json())
-          .then(data => {
-            let userCount = data.user_count;
-            const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
-            return msgElement.textContent = message
-          })
-          .catch(error => {
-            console.error("Error fetching user count:", error);
-          });
-        }
       }
     );
   }
