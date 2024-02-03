@@ -9,6 +9,6 @@ Rails.application.routes.draw do
   root "images#index"
   get '/images' => "images#index"
   get '/images/:id' => "images#show", constraints: { id: /\d+/ }
-  get '/images_json' => "images#json"
+  get '/images_json' => "images#images_json"
   get '/images/:id/user_count', to: 'images#user_count'
 end

@@ -5,6 +5,12 @@ import { Turbo } from "@hotwired/turbo-rails"
 export default class extends Controller {
   static targets = ["msg"];
 
+  handleBeforeCache = () => {
+    if (this.subscription) {
+      this.subscription.disconnected();
+    }
+  };
+
   connect() {
     const msgElement = this.msgTarget;
     setTimeout(() => {
@@ -13,15 +19,9 @@ export default class extends Controller {
     const imageId = this.element.dataset.imageId;
     this.fetchVisitorCount()
 
-    const handleBeforeCache = () => {
-      if (subscription) {
-        subscription.disconnected();
-      }
-    };
+    window.addEventListener('turbo:before-cache', this.handleBeforeCache)
 
-    window.addEventListener('turbo:before-cache', handleBeforeCache)
-
-    const subscription = consumer.subscriptions.create(
+    this.subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
       {
         connected: () => {
@@ -29,10 +29,11 @@ export default class extends Controller {
         },
         disconnected: () => {
           console.log(`Bye VisitorChannel ${imageId}`);
-          consumer.subscriptions.remove(subscription)
-          window.removeEventListener('turbo:before-cache', handleBeforeCache)
+          consumer.subscriptions.remove(this.subscription)
+          window.removeEventListener('turbo:before-cache', this.handleBeforeCache)
         },
         received: (data) => {
+          console.log(data.msg)
           if (data.msg === `Image ${imageId} has been destroyed.`) {
             alert('This image has been deleted. You will now be redirected to the home page.')
             window.location.href = '/';

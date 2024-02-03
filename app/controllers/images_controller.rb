@@ -1,31 +1,15 @@
 class ImagesController < ApplicationController
-  before_action :verify_ajax_request, only: [:json]
+  before_action :verify_ajax_request, only: [:images_json]
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
   def index
     @images = Image.all
   end
 
-  def json
-    @images = Image.all
-    render json: @images
-  end
-
-  def user_count
-    if request.referrer.present?
-      referrer = URI(request.referrer)
-      previous_path = referrer.path if referrer.path.present?
-      return if previous_path === "/images/new"
-    end
-    image_id = params[:id]
-    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
-    render json: {user_count:}
-  end
-
   def show
     @image = Image.find(params[:id])
     user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
-    @user_count_msg = "#{user_count} #{'user'.pluralize(user_count)} #{'is'.pluralize(user_count)} currently viewing this image."
+    @user_count_msg = "#{user_count} #{user_count == 1 ? 'user is' : 'users are'} currently viewing this image."
   end
 
   def new
@@ -54,6 +38,18 @@ class ImagesController < ApplicationController
     end
     redirect_to images_path, notice:  "#{@image.title} was successfully deleted."
   end
+
+  def images_json
+    @images = Image.all
+    render json: @images
+  end
+
+  def user_count
+    image_id = params[:id]
+    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    render json: {user_count:}
+  end
+
 
   private
 

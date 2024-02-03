@@ -10,17 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_02_074736) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_01_094458) do
   create_table "images", force: :cascade do |t|
     t.string "title"
     t.string "attachment"
     t.datetime "uploaded_time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "visitors", force: :cascade do |t|
-    t.string "cookie"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
