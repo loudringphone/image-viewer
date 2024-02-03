@@ -4,6 +4,7 @@ class VisitorChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
+    update_user_count(connection.current_user.id, false)
   end
 
   def received(data)
