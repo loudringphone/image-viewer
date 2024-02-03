@@ -1,6 +1,6 @@
 class ImagesController < ApplicationController
   before_action :verify_ajax_request, only: [:json]
-  skip_before_action :verify_authenticity_token, only: [:destroy]
+  skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
   def index
     broadcast_unsubscribe_message()
@@ -30,8 +30,8 @@ class ImagesController < ApplicationController
     broadcast_unsubscribe_message()
     @image = Image.find(params[:id])
     retrieve_visitor
-    @cookie = @visitor.cookie
-    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", {cookie: @cookie, msg: "Someone has entered visitor channel #{params[:id]}"})
+    @visitor_id = @visitor.id
+    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", {visitor_id: @visitor_id, msg: "Someone has entered visitor channel #{params[:id]}"})
     user_count = JSON.parse(REDIS.get("user_count_#{params[:id]}")).to_set
     users = user_count.size
     @user_count_msg = "#{users} #{'user'.pluralize(users)} #{'is'.pluralize(users)} currently viewing this image."
@@ -79,9 +79,9 @@ class ImagesController < ApplicationController
       previous_path = referrer.path if referrer.path.present?
       if previous_path.match?(%r{^/images/\d+$})
         retrieve_visitor
-        cookie = @visitor.cookie
+        visitor_id = @visitor.id
         id = previous_path.split("/").last.to_i
-        ActionCable.server.broadcast("visitor_channel_#{id}", { cookie:, msg: "Someone has left visitor channel #{id}"})
+        ActionCable.server.broadcast("visitor_channel_#{id}", { visitor_id:, msg: "Someone has left visitor channel #{id}"})
       end
     end
   end

@@ -10,38 +10,38 @@ export default class extends Controller {
       msgElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    const cookie = this.element.dataset.cookie;
+    const visitor_id = this.element.dataset.visitorId;
     this.fetchImageData()
     this.subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
       {
         connected: () => {
           console.log(`Connected to VisitorChannel ${imageId}`);
-          this.subscription.entered(cookie)
+          this.subscription.entered(visitor_id)
           this.subscription.fetchImageData()
         },
         disconnected: () => {
-          this.subscription.left(data.cookie)
+          this.subscription.left(data.visitor_id)
           this.subscription.fetchImageData()
         },
         received: (data) => {
           console.log(data.msg)
           if (data.msg === `Someone has entered visitor channel ${imageId}`) {
-            this.subscription.entered(data.cookie)
+            this.subscription.entered(data.visitor_id)
           }
           else if (data.msg === `Someone has left visitor channel ${imageId}`) {
-            this.subscription.left(data.cookie)
+            this.subscription.left(data.visitor_id)
           }
           this.subscription.fetchImageData()
         },
 
-        entered(cookie) {
-          this.perform('entered', { data: cookie });
+        entered(visitor_id) {
+          this.perform('entered', { data: visitor_id });
           this.fetchImageData()
         },
 
-        left(cookie) {
-          this.perform('left', { data: cookie });
+        left(visitor_id) {
+          this.perform('left', { data: visitor_id });
           this.fetchImageData()
         },
 
