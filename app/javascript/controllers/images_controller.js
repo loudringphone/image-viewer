@@ -8,12 +8,12 @@ export default class extends Controller {
   connect() {
     consumer.subscriptions.create("ImageChannel", {
       received: (data) => {
-        this.fetchImageData()
+        this.fetchImages()
       }
     });
   }
 
-  async fetchImageData() {
+  async fetchImages() {
     const tbodyElement = this.tbodyTarget;
     const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
     return fetch("/images_json", {

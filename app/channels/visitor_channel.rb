@@ -4,6 +4,7 @@ class VisitorChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
+    stop_stream_from "visitor_channel_#{params[:id]}"
     update_user_count(connection.current_user.id, false)
   end
 

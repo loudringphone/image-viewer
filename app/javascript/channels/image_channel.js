@@ -1,18 +1,18 @@
-import consumer from "channels/consumer"
+// import consumer from "channels/consumer"
 
-consumer.subscriptions.create("ImageChannel", {
-  connected() {
-    console.log("Connected to ImageChannel");
-  },
+// consumer.subscriptions.create("ImageChannel", {
+//   connected() {
+//     console.log("Connected to ImageChannel");
+//   },
 
-  disconnected() {
-    // Called when the subscription has been terminated by the server
-  },
+//   disconnected() {
+//     // Called when the subscription has been terminated by the server
+//   },
 
-  received(data) {
-  },
+//   received(data) {
+//   },
 
-  send(message) {
-    this.perform('received', { message: message });
-  }
-});
+//   send(message) {
+//     this.perform('received', { message: message });
+//   }
+// });

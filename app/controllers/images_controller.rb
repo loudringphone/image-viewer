@@ -47,7 +47,7 @@ class ImagesController < ApplicationController
       @image.uploaded_time = Time.now
       if @image.save
         REDIS.set("user_count_#{@image.id}", [])
-        ActionCable.server.broadcast('image_channel', { msg: 'An image has been created.'})
+        ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else
         render :new, status: :unprocessable_entity
@@ -57,7 +57,9 @@ class ImagesController < ApplicationController
   def destroy
     @image = Image.find(params[:id])
     if @image.destroy
-      ActionCable.server.broadcast('image_channel', { msg: 'An image has been destroyed.'})
+      ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been destroyed."})
+      ActionCable.server.broadcast("visitor_channel_#{@image.id}", { msg: "Image #{@image.id} has been destroyed."})
+
     end
     redirect_to images_path, notice:  "#{@image.title} was successfully deleted."
   end
