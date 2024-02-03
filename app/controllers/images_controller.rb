@@ -1,5 +1,5 @@
 class ImagesController < ApplicationController
-  before_action :verify_ajax_request, only: [:images_json]
+  before_action :verify_ajax_request, only: [:images_json, :user_count]
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
   def index
@@ -8,7 +8,7 @@ class ImagesController < ApplicationController
 
   def show
     @image = Image.find(params[:id])
-    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    user_count = JSON.parse(REDIS.get("user_count_#{params[:id]}")).to_set.size
     @user_count_msg = "#{user_count} #{user_count == 1 ? 'user is' : 'users are'} currently viewing this image."
   end
 
@@ -20,7 +20,7 @@ class ImagesController < ApplicationController
       @image = Image.new(image_params)
       @image.uploaded_time = Time.now
       if @image.save
-        REDIS.set("user_count_#{@image.id}", {user_count: 0}.to_json)
+        REDIS.set("user_count_#{@image.id}", [])
         ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else
@@ -46,8 +46,8 @@ class ImagesController < ApplicationController
 
   def user_count
     image_id = params[:id]
-    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
-    render json: {user_count:}
+    user_set = JSON.parse(REDIS.get("user_count_#{params[:id]}")).to_set
+    render json: user_set
   end
 
 

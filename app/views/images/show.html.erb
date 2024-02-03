@@ -2,6 +2,7 @@
   data-controller='visitor'
   data-image-id="<%= @image.id %>"
 >
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <h1 class="text-center text-red-400 font-bold text-2xl max-w-[350px] break-words">Title: <%= @image.title %></h1>
 
   <h2 class='text-xs text-center text-gray-400 my-2'>Uploaded Time: <%= @image.uploaded_time.strftime("%d-%b-%y %H:%M:%S") %></h2>
