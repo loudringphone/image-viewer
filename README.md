@@ -22,6 +22,8 @@
 - `./bin/rails s`
 - `redis-server`
 
+## Focused Development with Feature Branches
+To maintain clarity in my Git workflow, I utilize feature branches, each dedicated to significant gem integrations or critical functionalities. While the goal is to focus solely on the designated branch, occasional work on unrelated branches may occur. This approach ensures focused development, with changes seamlessly integrated into the main branch upon completion.
 
 ## User View Tracking with Action Cable
 In this project, I've explored the integration of Stimulus with Action Cable, which proved to be an engaging exercise. Utilizing Action Cable to track user views was initially more challenging than expected.
