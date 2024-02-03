@@ -13,13 +13,13 @@
       <%= form_with model: @image, local: true, html: { multipart: true }, id: 'image-form', class: 'flex flex-col items-center p-4 pb-0' do |f| %>
          <div class='flex mb-3'>
             <%= f.label :title, class: 'self-center mr-2' %>
-            <%= f.text_field :title, class: 'rounded-xl py-[1.5px]', data: { target: 'upload.title' } %>
+            <%= f.text_field :title, class: 'rounded-xl py-[1.5px]', data: { upload_target: 'title', action: 'input->upload#handleInput' } %>
          </div>
-         <%= f.file_field :attachment, accept: "image/*", class: 'text-sm whitespace-nowrap overflow-hidden text-last-center w-[260px]', data: { target: 'upload.attachment', action: 'change->upload#previewImage' } %>
+         <%= f.file_field :attachment, accept: "image/*", class: 'text-sm whitespace-nowrap overflow-hidden text-last-center w-[260px]', data: { upload_target: 'attachment', action: 'change->upload#previewImage' } %>
          <div class='h-[225px] py-4'>
             <img data-upload-target="preview" class='rounded-xl' />
          </div>
-         <%= f.submit "Save", class: 'w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl cursor-pointer' %>
+         <%= f.submit "Save", class: 'w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl opacity-50 cursor-pointer pointer-events-none', disabled: true, data: { upload_target: 'submit' } %>
       <% end %>
    </div>
 </div>
