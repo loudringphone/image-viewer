@@ -11,22 +11,21 @@ class ImagesController < ApplicationController
     render json: @images
   end
 
-  def visitor_count
+  def user_count
     if request.referrer.present?
       referrer = URI(request.referrer)
       previous_path = referrer.path if referrer.path.present?
       return if previous_path === "/images/new"
     end
     image_id = params[:id]
-    user_count = REDIS.get("user_count_#{params[:id]}")
-    render json: user_count
+    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    render json: {user_count:}
   end
 
   def show
     @image = Image.find(params[:id])
-    user_count = JSON.parse(REDIS.get("user_count_#{params[:id]}")).to_set
-    users = user_count.size
-    @user_count_msg = "#{users} #{'user'.pluralize(users)} #{'is'.pluralize(users)} currently viewing this image."
+    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    @user_count_msg = "#{user_count} #{'user'.pluralize(user_count)} #{'is'.pluralize(user_count)} currently viewing this image."
   end
 
   def new
@@ -37,7 +36,7 @@ class ImagesController < ApplicationController
       @image = Image.new(image_params)
       @image.uploaded_time = Time.now
       if @image.save
-        REDIS.set("user_count_#{@image.id}", [])
+        REDIS.set("user_count_#{@image.id}", {user_count: 0}.to_json)
         ActionCable.server.broadcast('image_channel', { msg: "Image #{@image.id} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
       else

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "images#index"
   get '/images' => "images#index"
+  get '/images/:id' => "images#show", constraints: { id: /\d+/ }
   get '/images_json' => "images#json"
-  get '/images/:id/visitor_count', to: 'images#visitor_count'
+  get '/images/:id/user_count', to: 'images#user_count'
 end

@@ -25,7 +25,8 @@ export default class extends Controller {
         },
         disconnected: () => {
           console.log(`Bye VisitorChannel ${imageId}`);
-          subscription.unsubscribe();
+          // subscription.unsubscribe();
+          consumer.subscriptions.remove(subscription)
         },
         received: (data) => {
           if (data.msg === `Image ${imageId} has been destroyed.`) {
@@ -36,10 +37,10 @@ export default class extends Controller {
         },
 
         async fetchVisitorCount () {
-          fetch(`/images/${imageId}/visitor_count`)
+          fetch(`/images/${imageId}/user_count`)
           .then(response => response.json())
           .then(data => {
-            let userCount = data.length;
+            let userCount = data.user_count;
             const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
             return msgElement.textContent = message
           })
@@ -49,16 +50,14 @@ export default class extends Controller {
         }
       }
     );
-    subscription.perform('subscribed', {});
-
   }
   async fetchVisitorCount () {
     const msgElement = this.msgTarget;
     const imageId = this.element.dataset.imageId;
-    return fetch(`/images/${imageId}/visitor_count`)
+    return fetch(`/images/${imageId}/user_count`)
     .then(response => response.json())
     .then(data => {
-      let userCount = data.length;
+      let userCount = data.user_count
       const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
       msgElement.textContent = message
       return data
