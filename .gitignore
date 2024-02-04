@@ -31,6 +31,9 @@
 
 /public/assets
 
+public/uploads/tmp/*
+public/uploads/image/attachment/*
+
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
