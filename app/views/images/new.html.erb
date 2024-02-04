@@ -15,7 +15,7 @@
             <%= f.label :title, class: 'self-center mr-2' %>
             <%= f.text_field :title, class: 'rounded-xl py-[1.5px]', data: { upload_target: 'title', action: 'input->upload#handleInput' } %>
          </div>
-         <%= f.file_field :attachment, accept: "image/*", class: 'text-sm whitespace-nowrap overflow-hidden text-last-center w-[260px]', data: { upload_target: 'attachment', action: 'change->upload#previewImage' } %>
+         <%= f.file_field :attachment, accept: "image/*", id: 'image-attachment', class: 'text-sm whitespace-nowrap overflow-hidden text-last-center w-[260px]', data: { upload_target: 'attachment', action: 'change->upload#previewImage' } %>
          <div class='h-[225px] py-4'>
             <img data-upload-target="preview" class='rounded-l' />
          </div>
