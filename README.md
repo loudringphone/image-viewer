@@ -7,10 +7,11 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 - `git clone git@github.com:loudringphone/medical-image-viewer.git`
 - `cd medical-image-viewer`
 - `rails db:migrate`
+- `rails db:seed`
 - `bundle install`
 - `rake assets:precompile`
 
-##### Installing Redis
+##### Installing Redis (if needed)
 ###### On Linux
 - `wget http://download.redis.io/redis-stable.tar.gz`
 - `tar xvzf redis-stable.tar.gz`
@@ -19,9 +20,10 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 - `make install`
 ###### On Mac
 - `brew install redis`
-##### Starting the servers
+
+### Starting the servers
 - `./bin/setup`
-- `./bin/rails s`
+- `rails s`
 - `redis-server`
 
 ## User View Tracking with Action Cable
