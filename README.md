@@ -53,6 +53,8 @@ end
 
 Lastly, to enhance the accuracy of view tracking, I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. While the previous method was susceptible to concurrency issues, this new strategy ensures accuracy by meticulously tracking individual user views. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone. Thus, upon completing this assignment, I aim to explore more streamlined techniques, including the implementation of locking and concurrency mechanisms, to mitigate potential concurrency issues.
 
+It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
+
 ```
 app/channels/application_cable/connection.rb (on branch cookie_count)
 def current_user_cookie
