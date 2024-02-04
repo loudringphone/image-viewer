@@ -4,6 +4,7 @@ RSpec.describe 'images/new', type: :feature, js: true do
   it 'renders error messages if image title is too long' do
     visit new_image_path
     fill_in 'Title', with: '1234567890123456789012345678901'
+    fill_in 'Description', with: '123'
     attach_file('image-attachment', Rails.root.join('spec/fixtures/Image.jpg'))
     expect(page).to have_button('Save', disabled: false)
     click_button('Save')

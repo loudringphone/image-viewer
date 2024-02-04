@@ -14,11 +14,11 @@ RSpec.describe VisitorChannel, type: :channel do
     subscribe(id: image.id)
     expect(subscription).to be_confirmed
     expect(subscription).to have_stream_from("visitor_channel_#{image.id}")
-    expect(REDIS.get("user_count_1")).to eq "{\"user_count\":#{ user_count + 1 }}"
+    expect(REDIS.get("user_count_1")).to eq "{\"lock\":null,\"user_count\":#{ user_count + 1 }}"
 
     # Unsubscribe from the channel
     subscription.unsubscribed
     expect(subscription).to_not have_stream_from("visitor_channel_#{image.id}")
-    expect(REDIS.get("user_count_1")).to eq "{\"user_count\":#{ user_count }}"
+    expect(REDIS.get("user_count_1")).to eq "{\"lock\":null,\"user_count\":#{ user_count }}"
   end
 end

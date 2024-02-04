@@ -9,6 +9,6 @@ RSpec.describe 'images/show', type: :feature, js: true do
   visit image_path(image)
     expect(page).to have_content(image.title)
     expect(page).to have_selector('img')
-    expect(page).to have_content('1 user is currently viewing this image.')
+    expect(page).to have_content('Connected Users: 1')
   end
 end

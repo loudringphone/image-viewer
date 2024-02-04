@@ -47,7 +47,17 @@ export default class extends Controller {
             anchor.id = 'next';
             anchor.classList.add('cursor-pointer', 'ml-auto');
             anchor.href = `/images/${nextImg[1]}`;
-            anchor.textContent = 'Next';
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            svg.setAttribute('viewBox', '0 0 24 24');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', 'm21.707 11.293-7-7A1 1 0 0 0 13 5v3H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h10v3a1 1 0 0 0 1.707.707l7-7a1 1 0 0 0 0-1.414z');
+            path.style.fill = '#ccc';
+            svg.appendChild(path);
+            anchor.appendChild(svg);
+            const span = document.createElement('span');
+            span.textContent = 'Next';
+            anchor.appendChild(span);
             navElement.appendChild(anchor);
           }
           this.fetchVisitorCount()
