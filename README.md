@@ -62,5 +62,11 @@ def current_user_cookie
 end
 ```
 
-
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of Stimulus, Action Cable and Redis.
+
+## Gem used
+
+#### CarrierWave
+To prevent image attachments from being pushed to Git, added the following to `.gitignore`: `public/uploads/tmp/*` and `public/uploads/image/attachment/*`. This ensures that files in these directories are not included in version control.
+
+
