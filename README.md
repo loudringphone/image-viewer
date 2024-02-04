@@ -51,8 +51,7 @@ def unsubscribed
 end
 ```
 
-
-Lastly, to ensure accurate tracking of views, I devised an alternative method of counting views by recording unique cookies in a set. As cookies are unique to each user, counting them provides a more accurate depiction of user views. I integrated this approach with Action Cable's capabilities to further enhance the accuracy of view tracking on a seperate branch as a backup plan in case the previous method fails.
+Lastly, to enhance the accuracy of view tracking, I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. While the previous method was susceptible to concurrency issues, this new strategy ensures accuracy by meticulously tracking individual user views. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone. Thus, upon completing this assignment, I aim to explore more streamlined techniques, including the implementation of locking and concurrency mechanisms, to mitigate potential concurrency issues.
 
 ```
 app/channels/application_cable/connection.rb (on branch cookie_count)
@@ -61,7 +60,7 @@ def current_user_cookie
 end
 ```
 
-Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of Stimulus, Action Cable and Redis.
+Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
 ## Gem used
 
