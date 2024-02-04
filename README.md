@@ -51,9 +51,7 @@ def unsubscribed
 end
 ```
 
-Lastly, to enhance the accuracy of view tracking, I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. While the previous method was susceptible to concurrency issues, this new strategy ensures accuracy by meticulously tracking individual user views. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone. Thus, upon completing this assignment, I aim to explore more streamlined techniques, including the implementation of locking and concurrency mechanisms, to mitigate potential concurrency issues.
-
-It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
+Thirdly, as I was first learning how to use `Action Cable`, I was not confident about the accuracy of view tracking, there I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone and both this method and the previous one could have concurrency issues as the race condition may occur. It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
 
 ```
 app/channels/application_cable/connection.rb (on branch cookie_count)
@@ -61,6 +59,52 @@ def current_user_cookie
   cookies['user_id']
 end
 ```
+
+Lastly I have come up an idea to provide a basic locking mechanism. it ensures exclusive access to view count update by acquiring a unique lock before performing counting. Utilising `Redis` for synchronization, it safeguards against concurrency issues by serializing access, thereby maintaining data integrity. Error handling further enhances reliability by gracefully managing potential failures during the locking process.
+
+```
+def update_user_count(change)
+  new_lock = SecureRandom.uuid
+  user_count_hash = locking(new_lock)
+  REDIS.multi do |multi|
+    user_count = user_count_hash['user_count']
+    user_count += change
+    user_count_hash = {'lock': nil, 'user_count': user_count}
+    multi.set("user_count_#{params[:id]}", user_count_hash.to_json)
+    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
+  end
+end
+
+def locking(new_lock)
+  current_lock = new_lock
+  user_count_hash = nil
+  retries = 3
+  begin
+    until !current_lock || retries <= 0
+      user_count_json = REDIS.get("user_count_#{params[:id]}") || {'lock': nil, 'user_count': 0}.to_json
+      user_count_hash = JSON.parse(user_count_json)
+      current_lock = user_count_hash["lock"]
+      retries -= 1
+    end
+    if retries <= 0
+      raise "Failed to acquire lock after multiple retries for user_count_#{params[:id]}"
+    end
+    user_count_hash["lock"] = new_lock
+    REDIS.set("user_count_#{params[:id]}", user_count_hash.to_json)
+
+    user_count_hash = JSON.parse(REDIS.get("user_count_#{params[:id]}"))
+    if user_count_hash["lock"] != new_lock
+      locking(new_lock)
+    else
+      user_count_hash
+    end
+  rescue StandardError => e
+    puts "Error occurred: #{e.message}"
+    user_count_hash = {'lock': nil, 'user_count': 99999}
+  end
+end
+```
+
 
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
