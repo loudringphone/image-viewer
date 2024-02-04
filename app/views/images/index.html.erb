@@ -21,7 +21,7 @@
             <tr>
                <td>
                   <a href="<%= image_path(image) %>">
-                     <img class="h-[50px]" src="<%= image.attachment_url %>" alt="<%= image.title %>">
+                     <img class="h-[50px] ml-auto mr-auto" src="<%= image.attachment_url %>" alt="<%= image.title %>">
                   </a>
                </td>
                <td class='max-w-[350px] whitespace-nowrap overflow-hidden'><%= link_to image.title, image_path(image) %></td>
