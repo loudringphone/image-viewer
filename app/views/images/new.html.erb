@@ -19,6 +19,10 @@
          <div class='h-[225px] py-4'>
             <img data-upload-target="preview" class='rounded-l' />
          </div>
+         <div class='flex flex-col gap-2'>
+             <%= f.label :description %>
+         <%= f.text_area :description, class: 'rounded-xl w-[275px]', data: { upload_target: 'description', action: 'input->upload#handleInput' } %>
+         </div>
          <%= f.submit "Save", class: 'mt-8 w-[300px] text-white h-[50px] bg-blue-500 rounded-bl-xl rounded-br-xl opacity-50 cursor-pointer pointer-events-none', disabled: true, data: { upload_target: 'submit' } %>
       <% end %>
    </div>

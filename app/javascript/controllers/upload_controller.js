@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="upload"
 export default class extends Controller {
-  static targets = ['title', 'attachment', 'preview', 'submit'];
+  static targets = ['title', 'description', 'attachment', 'preview', 'submit'];
 
   connect() {
   }
@@ -23,8 +23,9 @@ export default class extends Controller {
   }
   handleInput() {
     const title = this.titleTarget
+    const description = this.descriptionTarget
     const filesLength = this.attachmentTarget.files.length
-    if (title.value.trim() !== '' && filesLength > 0) {
+    if (title.value.trim() !== '' && description.value.trim() !== '' && filesLength > 0) {
       this.enableSubmit()
     } else {
       this.disableSubmit()
