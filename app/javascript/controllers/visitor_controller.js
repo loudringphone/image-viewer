@@ -3,7 +3,7 @@ import consumer from "channels/consumer"
 import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
-  static targets = ["msg"];
+  static targets = ["msg", "nav"];
 
   handleBeforeCache = () => {
     if (this.subscription) {
@@ -12,6 +12,7 @@ export default class extends Controller {
   };
 
   connect() {
+    const navElement = this.navTarget;
     const msgElement = this.msgTarget;
     setTimeout(() => {
       msgElement.style.visibility = 'visible'
@@ -36,7 +37,18 @@ export default class extends Controller {
           console.log(data.msg)
           if (data.msg === `Image ${imageId} has been destroyed.`) {
             alert('This image has been deleted. You will now be redirected to the home page.')
-            window.location.href = '/';
+            return window.location.href = '/';
+          }
+          const nextImgMsg = /Next image (\d+) has been created/;
+          const nextImg = nextImgMsg.exec(data.msg);
+          console.log(nextImg)
+          if (nextImg) {
+            const anchor = document.createElement('a');
+            anchor.id = 'next';
+            anchor.classList.add('cursor-pointer', 'ml-auto');
+            anchor.href = `/images/${nextImg[1]}`;
+            anchor.textContent = 'Next';
+            navElement.appendChild(anchor);
           }
           this.fetchVisitorCount()
         },

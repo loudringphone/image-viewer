@@ -5,7 +5,7 @@
   <h1 class="mr-auto ml-auto text-center text-red-400 font-bold text-2xl max-w-[350px] break-words">Title: <%= @image.title %></h1>
   <h2 class='text-center my-2 text-xs text-gray-400'>Uploaded Time: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></h2>
   <hr>
-  <div class="flex my-2 text-xs text-gray-400">
+  <div class="flex my-2 text-xs text-gray-400" id='img-nav' data-visitor-target="nav">
     <% if @previous_image %>
       <a id='previous' class='cursor-pointer mr-auto' href="<%= image_path(@previous_image) %>">
         Previous

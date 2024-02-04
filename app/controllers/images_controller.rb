@@ -28,6 +28,8 @@ class ImagesController < ApplicationController
   def create
       @image = Image.new(image_params)
       if @image.save
+        previous_image = Image.previous_image(@image.created_at)
+        ActionCable.server.broadcast("visitor_channel_#{previous_image.id}", { msg: "Next image #{@image.id} has been created."}) if previous_image
         REDIS.set("user_count_#{@image.id}", {user_count: 0}.to_json)
         ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been created."})
         redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
@@ -42,6 +44,11 @@ class ImagesController < ApplicationController
     if @image.destroy
       ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been destroyed."})
       ActionCable.server.broadcast("visitor_channel_#{@image.id}", { msg: "Image #{@image.id} has been destroyed."})
+
+      previous_image = Image.previous_image(@image.created_at)
+      ActionCable.server.broadcast("visitor_channel_#{previous_image.id}", { msg: "Next image #{@image.id} has been destroyed."}) if previous_image
+      next_image = Image.next_image(@image.created_at)
+      ActionCable.server.broadcast("visitor_channel_#{next_image.id}", { msg: "Previous image #{@image.id} has been destroyed."}) if next_image
 
     end
     redirect_to images_path, notice:  "#{@image.title} was successfully deleted."

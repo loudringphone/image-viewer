@@ -15,15 +15,17 @@ export default class extends Controller {
           notice.remove()
         }
         const childElement = document.createElement('div');
-        childElement.classList.add('text-sm', 'text-red-400');
+        childElement.classList.add('text-sm', 'text-red-400', 'invisible');
         childElement.id = 'notice'
         childElement.innerHTML = `${data.msg.slice(0, -1)} by another user.`;
         const firstChild = containerElement.firstChild;
         containerElement.insertBefore(childElement, firstChild);
+        setTimeout(() => {
+          childElement.style.visibility = 'visible'
+        }, 150);
       }
     });
   }
-
   async fetchImages() {
     const tbodyElement = this.tbodyTarget;
     const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
