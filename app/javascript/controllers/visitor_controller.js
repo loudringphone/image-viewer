@@ -58,18 +58,10 @@ export default class extends Controller {
   async fetchVisitorCount () {
     const msgElement = this.msgTarget;
     const imageId = this.element.dataset.imageId;
-    const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-    return fetch(`/images/${imageId}/user_count`, {
-      method: "GET",
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        "X-CSRF-Token": csrfToken
-      },
-      credentials: 'same-origin'
-    })
+    return fetch(`/images/${imageId}/user_count`)
     .then(response => response.json())
     .then(data => {
-      let userCount = data.length;
+      let userCount = data.user_count
       const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
       msgElement.textContent = message
       return data
