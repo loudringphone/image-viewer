@@ -1,8 +1,11 @@
 # README
 
+## Introduction
+Welcome to the this `Rails` image viewer application! This README provides a comprehensive overview of the project, including setup instructions, implementation details, and usage guidelines.
+
 #### How to run
 - `git clone git@github.com:loudringphone/medical-image-viewer.git`
-- `cd medical-image-viewer/`
+- `cd medical-image-viewer`
 - `rails db:migrate`
 - `bundle install`
 - `rake assets:precompile`
@@ -18,12 +21,8 @@
 - `brew install redis`
 ##### Starting the servers
 - `./bin/setup`
-- `./bin/cable`
 - `./bin/rails s`
 - `redis-server`
-
-## Focused Development with Feature Branches
-To maintain clarity in my Git workflow, I utilize feature branches, each dedicated to significant gem integrations or critical functionalities. While the goal is to focus solely on the designated branch, occasional work on unrelated branches may occur. This approach ensures focused development, with changes seamlessly integrated into the main branch upon completion.
 
 ## User View Tracking with Action Cable
 In this project, I've explored the integration of Stimulus with Action Cable, which proved to be an engaging exercise. Utilizing Action Cable to track user views was initially more challenging than expected.
@@ -66,7 +65,34 @@ Overall, through experimentation and iteration, I've achieved a robust solution 
 
 ## Gem used
 
-#### CarrierWave
+#### `ActionCable`, `Stimulus` and `Redis`
+To track view counts, I've implemented a system where each user subscribing to an image channel increases the count by 1, leveraging `ActionCable` and `Redis`. When users leave, they're unsubscribed, decrementing the count. While `ActionCable` and `Redis` manage count records, the subscription and unsubscription processes are facilitated by `ActionCable` and `Stimulus`.
+
+
+However, unexpected server shutdowns don't automatically unsubscribe users. To ensure accurate counts, I clear records when server is being initialised.
+
+
+Besides dynamically displaying view counts, when an image is created or destroyed, the image list on the index page would automatically be updated without the need of refreshing the page. `ActionCable` would also broadcast a message that would be shown on the index page indicating which image has been created or destroyed. Additionally, if an user is on the image page when it's destroyed, they would also be redirected back to the index with an alert prompt indicating the deletion.
+
+#### `CarrierWave`
 To prevent image attachments from being pushed to Git, added the following to `.gitignore`: `public/uploads/tmp/*` and `public/uploads/image/attachment/*`. This ensures that files in these directories are not included in version control.
 
+## Quality and Testing
+To test the image models, I've utilised `shoulda-matchers` and `factory_bot` for efficient and readable tests. For verifying user interactions and HTML elements, `capybara` and `selenium-webdriver` were employed to ensure correctness in view pages. Although I encountered challenges in understanding how to test `action-cable`, I managed to do some basic testings. Given more time, I plan to delve deeper into testing with `action-cable` to enhance my skills and understanding further.
 
+After running tests, I've observed that temporary images persist, so I've implemented code to automatically delete them post-testing.
+
+```
+config.after(:suite) do
+  files_deleted = FileUtils.rm_rf(Dir[Rails.root.join('public/uploads/tmp/*')])
+end
+```
+
+##  UI/UX
+I've utilised `Hotwire` to elevate user experience with seamless page updates. When new images are created or removed, the index page refreshes automatically. Additionally, on the new image page, the save button remains disabled until the user completes the title field and attaches an image. `Tailwind CSS` provides basic styling, including a dynamic header indicating the current page and responsive design adapting to screen width.
+
+## Git Usage
+To maintain clarity in my Git workflow, I utilise feature branches, each dedicated to significant gem integrations or critical functionalities. While the goal is to focus solely on the designated branch, occasional work on unrelated branches may occur. This approach ensures focused development, with changes seamlessly integrated into the main branch upon completion.
+
+## Conclusion
+Thank you for considering this take-home assignment. Developing this application has been an enriching experience, allowing me to deepen my understanding of `Hotwire`, `Action Cable`, and real-time user interaction. I look forward to further refining and expanding this project in the future. If you have any questions or feedback, please don't hesitate to reach out.
