@@ -31,12 +31,11 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
-Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new app, browser: :chrome,
-    options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
-end
-
-Capybara.javascript_driver = :chrome
+# Capybara.register_driver :chrome do |app|
+#   Capybara::Selenium::Driver.new app, browser: :chrome,
+#     options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
+# end
+# Capybara.javascript_driver = :chrome
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -73,6 +72,15 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
   config.include FactoryBot::Syntax::Methods
+
+  config.before(:each, type: :system, js: true) do
+    driven_by :headless_chrome
+  end
+  config.after(:each, type: :system) do
+    driven_by :rack_test
+    Capybara.reset_sessions!
+    page.driver.reset!
+  end
 end
 
 Shoulda::Matchers.configure do |config|
