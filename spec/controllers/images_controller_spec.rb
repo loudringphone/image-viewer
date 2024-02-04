@@ -32,7 +32,7 @@ RSpec.describe ImagesController, type: :controller do
       allow(REDIS).to receive(:get).with("user_count_#{image.id}").and_return('{"user_count": 3}')
 
       get :show, params: { id: image.id }
-      expect(assigns(:user_count_msg)).to eq('3 users are currently viewing this image.')
+      expect(assigns(:user_count)).to eq('3')
     end
   end
 

@@ -12,9 +12,8 @@ class ImagesController < ApplicationController
     @image = Image.find(params[:id])
     return redirect_to images_path unless @image
     user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
-    user_count = JSON.parse(user_count_json)["user_count"]
-    user_count = 1 if user_count === 0
-    @user_count_msg = "#{user_count} #{user_count == 1 ? 'user is' : 'users are'} currently viewing this image."
+    @user_count = JSON.parse(user_count_json)["user_count"]
+    @user_count = 1 if @user_count === 0
     @previous_image = Image.previous_image(@image.created_at)
     @next_image = Image.next_image(@image.created_at)
 

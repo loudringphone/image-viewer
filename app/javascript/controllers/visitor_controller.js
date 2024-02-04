@@ -3,7 +3,7 @@ import consumer from "channels/consumer"
 import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
-  static targets = ["msg", "nav"];
+  static targets = ["nav", "count"];
 
   handleBeforeCache = () => {
     if (this.subscription) {
@@ -13,9 +13,9 @@ export default class extends Controller {
 
   connect() {
     const navElement = this.navTarget;
-    const msgElement = this.msgTarget;
+    const countElement = this.countTarget;
     setTimeout(() => {
-      msgElement.style.visibility = 'visible'
+      countElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
     // this.fetchVisitorCount()
@@ -56,14 +56,12 @@ export default class extends Controller {
     );
   }
   async fetchVisitorCount () {
-    const msgElement = this.msgTarget;
+    const countElement = this.countTarget;
     const imageId = this.element.dataset.imageId;
     return fetch(`/images/${imageId}/user_count`)
     .then(response => response.json())
     .then(data => {
-      let userCount = data.user_count
-      const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
-      msgElement.textContent = message
+      countElement.textContent = data.user_count
       return data
     })
     .catch(error => {

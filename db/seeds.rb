@@ -1,12 +1,14 @@
+require 'faker'
+
 Image.destroy_all
 
 # Create images
 images = [
-  { title: 'Image 1', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image1.jpg')) },
-  { title: 'Image 2', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image2.jpg')) },
-  { title: 'Image 3', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image3.jpg')) },
-  { title: 'Image 4', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image4.jpg')) },
-  { title: 'Image 5', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image5.jpg')) }
+  { title: 'Image 1', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image1.jpg')), description: Faker::Lorem.sentence(word_count: 15) },
+  { title: 'Image 2', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image2.jpg')), description: Faker::Lorem.sentence(word_count: 15) },
+  { title: 'Image 3', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image3.jpg')), description: Faker::Lorem.sentence(word_count: 15) },
+  { title: 'Image 4', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image4.jpg')), description: Faker::Lorem.sentence(word_count: 15) },
+  { title: 'Image 5', attachment: File.open(File.join(Rails.root, 'app', 'assets', 'images', 'image5.jpg')), description: Faker::Lorem.sentence(word_count: 15) }
 ]
 
 # Seed images

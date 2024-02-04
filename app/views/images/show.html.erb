@@ -1,23 +1,28 @@
-<div class="w-[375px]"
+<div
   data-controller='visitor'
   data-image-id="<%= @image.id %>"
 >
-  <h1 class="mr-auto ml-auto text-center text-red-400 font-bold text-2xl max-w-[350px] break-words">Title: <%= @image.title %></h1>
-  <h2 class='text-center my-2 text-xs text-gray-400'>Uploaded Time: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></h2>
-  <hr>
-  <div class="flex my-2 text-xs text-gray-400 h-[16px]" id='img-nav' data-visitor-target="nav">
-    <% if @previous_image %>
-      <a id='previous' class='cursor-pointer mr-auto' href="<%= image_path(@previous_image) %>">
-        Previous
-      </a>
-    <% end %>
-    <% if @next_image %>
-      <a id='next' class='cursor-pointer ml-auto' href="<%= image_path(@next_image) %>">
-          Next
-      </a>
-    <% end %>
+  <h1 class='viewer-title text-l'> Medical Image Viewer <span >- Connected Users: <span data-visitor-target="count"><%= @user_count %></span></span> </h1>
+  <p class='text-xs text-gray-400'>Uploaded at: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></p>
+<div class='image-viewer flex my-4 gap-4'>
+    <div class='flex flex-col'>
+      <img class="ml-auto mr-auto w-[300px]" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
+      <div class="flex my-2 text-2xl text-gray-400 h-[16px]" id='img-nav' data-visitor-target="nav">
+        <% if @previous_image %>
+          <a id='previous' class='cursor-pointer mr-auto' href="<%= image_path(@previous_image) %>">
+            Prev
+          </a>
+        <% end %>
+        <% if @next_image %>
+          <a id='next' class='cursor-pointer ml-auto' href="<%= image_path(@next_image) %>">
+              Next
+          </a>
+        <% end %>
+      </div>
+    </div>
+    <div class='flex flex-col h-[inherit]'>
+      <h1 class="text-red-400 font-bold text-2xl max-w-[350px] mb-4">Title: <%= @image.title %></h1>
+      <p class="max-w-[250px]"><%= @image.description %></p>
+    </div>
   </div>
-
-  <img class="my-6 ml-auto mr-auto" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
-  <p data-visitor-target="msg" class='invisible text-center'><%= @user_count_msg %></p>
 </div>
