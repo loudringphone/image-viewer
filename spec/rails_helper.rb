@@ -7,6 +7,8 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'factory_bot_rails'
+require 'shoulda/matchers'
+require "action_cable/testing/rspec"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -31,19 +33,10 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
-# Capybara.register_driver :chrome do |app|
-#   Capybara::Selenium::Driver.new app, browser: :chrome,
-#     options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
-# end
-# Capybara.javascript_driver = :chrome
-
 RSpec.configure do |config|
+  config.include ActionCable::TestHelper
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
-  ]
-  config.include ActionDispatch::TestProcess::FixtureFile
-
+ 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
@@ -80,6 +73,8 @@ RSpec.configure do |config|
     driven_by :rack_test
     Capybara.reset_sessions!
     page.driver.reset!
+
+    FileUtils.rm_rf(Dir[Rails.root.join('public/uploads/tmp/*')])
   end
 end
 

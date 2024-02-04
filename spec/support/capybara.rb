@@ -18,6 +18,16 @@ require 'capybara/rspec'
 # By default Capybara will use Selenium+Firefox for `js:true` feature specs.
 # Only if you're not using Puffing Billy, to use Chrome instead of Firefox,
 # uncomment the following 3 lines:
+# Capybara.register_driver :chrome do |app|
+#   Capybara::Selenium::Driver.new(app, browser: :chrome)
+# end
+
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new app, browser: :chrome,
+    options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless disable-gpu])
+end
+
+Capybara.javascript_driver = :chrome
 
 # 3. Start using Capybara. See feature specs in this project for examples.
 

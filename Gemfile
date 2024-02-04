@@ -60,6 +60,7 @@ group :development, :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'faker'
+  gem 'action-cable-testing'
 end
 
 group :development do
