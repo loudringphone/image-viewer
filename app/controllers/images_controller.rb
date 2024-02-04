@@ -3,15 +3,22 @@ class ImagesController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
   def index
-    @images = Image.all
+    @images = Image.order(created_at: :desc)
   end
 
   def show
     @image = Image.find(params[:id])
+    return redirect_to images_path unless @image
     user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
     user_count = eval(user_count_json)[:user_count]
     user_count = 1 if user_count === 0
     @user_count_msg = "#{user_count} #{user_count == 1 ? 'user is' : 'users are'} currently viewing this image."
+    @previous_image = Image.previous_image(@image.created_at)
+    @next_image = Image.next_image(@image.created_at)
+
+  rescue ActiveRecord::RecordNotFound
+    flash[:notice] = "Image with ID #{params[:id]} not found"
+    redirect_to images_path
   end
 
   def new

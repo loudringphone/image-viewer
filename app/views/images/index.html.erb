@@ -25,7 +25,7 @@
                   </a>
                </td>
                <td class='max-w-[350px] whitespace-nowrap overflow-hidden'><%= link_to image.title, image_path(image) %></td>
-               <td class='text-xs text-wrap'><%= image.created_at.strftime("%d-%b-%y %H:%M:%S") %></td>
+               <td><span class='text-xs text-wrap'><%= image.created_at.strftime("%d-%b-%y %H:%M:%S") %></span></td>
                <td>
                   <form action="<%= image_path(image) %>" method="post" class="delete-form text-center">
                      <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
