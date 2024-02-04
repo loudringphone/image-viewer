@@ -17,7 +17,7 @@ export default class extends Controller {
       msgElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    this.fetchVisitorCount()
+    // this.fetchVisitorCount()
 
     window.addEventListener('turbo:before-cache', this.handleBeforeCache)
 

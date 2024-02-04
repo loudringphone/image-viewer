@@ -8,7 +8,9 @@ class ImagesController < ApplicationController
 
   def show
     @image = Image.find(params[:id])
-    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
+    user_count = eval(user_count_json)[:user_count]
+    user_count = 1 if user_count === 0
     @user_count_msg = "#{user_count} #{user_count == 1 ? 'user is' : 'users are'} currently viewing this image."
   end
 
@@ -45,7 +47,8 @@ class ImagesController < ApplicationController
 
   def user_count
     image_id = params[:id]
-    user_count = eval(REDIS.get("user_count_#{params[:id]}"))[:user_count]
+    user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
+    user_count = eval(user_count_json)[:user_count]
     render json: {user_count:}
   end
 
