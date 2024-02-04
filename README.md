@@ -6,8 +6,6 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 #### How to run
 - `git clone git@github.com:loudringphone/medical-image-viewer.git`
 - `cd medical-image-viewer`
-- `rails db:migrate`
-- `rails db:seed`
 - `bundle install`
 - `rake assets:precompile`
 
@@ -23,6 +21,8 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 
 ### Starting the servers
 - `./bin/setup`
+- `rails db:migrate`
+- `rails db:seed`
 - `rails s`
 - `redis-server`
 
