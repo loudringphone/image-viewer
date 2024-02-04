@@ -4,7 +4,7 @@
 >
   <h1 class="text-center text-red-400 font-bold text-2xl max-w-[350px] break-words">Title: <%= @image.title %></h1>
 
-  <h2 class='text-xs text-center text-gray-400 my-2'>Uploaded Time: <%= @image.uploaded_time.strftime("%d-%b-%y %H:%M:%S") %></h2>
+  <h2 class='text-xs text-center text-gray-400 my-2'>Uploaded Time: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></h2>
   <hr>
   <img class="my-6 ml-auto mr-auto" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
   <p data-visitor-target="msg" class='invisible text-center'><%= @user_count_msg %></p>

@@ -47,7 +47,7 @@ export default class extends Controller {
           <tr>
             <td><a href="/images/${image.id}"><img  class="h-[50px]" src="${image.attachment.url}" alt="${image.title}"></a></td>
             <td><a href="/images/${image.id}">${image.title}</a></td>
-            <td class='text-xs text-wrap'>${new Date(image.uploaded_time)
+            <td class='text-xs text-wrap'>${new Date(image.created_at)
               .toLocaleString('en', {
                 day: '2-digit',
                 month: 'short',

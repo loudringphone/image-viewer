@@ -18,7 +18,6 @@ class ImagesController < ApplicationController
 
   def create
       @image = Image.new(image_params)
-      @image.uploaded_time = Time.now
       if @image.save
         REDIS.set("user_count_#{@image.id}", {user_count: 0}.to_json)
         ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been created."})
