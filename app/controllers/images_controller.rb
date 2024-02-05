@@ -4,10 +4,6 @@ class ImagesController < ApplicationController
   before_action :verify_ajax_request, only: [:images_json]
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
-  # rescue_from SQLite3::BusyException do |exception|
-  #   flash[:alert] = "Sorry, the database is currently busy. Please try again later."
-  # end
-
   def index
     @images = Image.order(created_at: :desc)
   end
@@ -15,8 +11,6 @@ class ImagesController < ApplicationController
   def show
     image_id = params[:id]
     @image = Image.find(image_id)
-    # user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
-    # @user_count = JSON.parse(user_count_json)["user_count"]
     @user_count = REDIS.get("user_count_#{params[:id]}") || 0
     @user_count = 1 if @user_count === 0
     @previous_image = Image.previous_image(@image.created_at)
@@ -73,8 +67,6 @@ class ImagesController < ApplicationController
 
   def user_count
     image_id = params[:id]
-    # user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
-    # user_count = JSON.parse(user_count_json)
     user_count = REDIS.get("user_count_#{params[:id]}") || 0
 
     render json: user_count
