@@ -34,32 +34,3 @@
     </div>
   </div>
 </div>
-
-
-<script>
-  window.addEventListener('beforeunload', handleBeforeUnload);
-  window.addEventListener('turbo:before-cache', handleBeforeCache);
-
-  function handleBeforeCache() {
-    window.removeEventListener('turbo:before-cache', handleBeforeCache);
-    const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-    fetch('/images/<%= @image.id %>/decrement_views', {
-      method: 'PATCH',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        "X-CSRF-Token": csrfToken
-      },
-    })
-  }
-  function handleBeforeUnload() {
-    window.removeEventListener('turbo:before-cache', handleBeforeUnload);
-    const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-    fetch('/images/<%= @image.id %>/decrement_views', {
-      method: 'PATCH',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        "X-CSRF-Token": csrfToken
-      },
-    })
-  }
-</script>
