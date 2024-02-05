@@ -14,7 +14,6 @@ class ImagesController < ApplicationController
 
   def show
     image_id = params[:id]
-    increment_views(image_id)
     @image = Image.find(image_id)
     user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
     @user_count = JSON.parse(user_count_json)["user_count"]
@@ -75,24 +74,6 @@ class ImagesController < ApplicationController
     user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
     user_count = JSON.parse(user_count_json)
     render json: user_count
-  end
-
-  def increment_views(image_id)
-    Image.transaction do
-      image = Image.lock.find(image_id)
-      image.update!(current_views: image.current_views + 1)
-    end
-  rescue ActiveRecord::RecordNotFound
-  rescue ActiveRecord::Deadlocked
-  end
-
-  def decrement_views
-    Image.transaction do
-      image = Image.lock.find(params[:id])
-      image.update!(current_views: image.current_views - 1)
-    end
-  rescue ActiveRecord::RecordNotFound
-  rescue ActiveRecord::Deadlocked
   end
 
   private

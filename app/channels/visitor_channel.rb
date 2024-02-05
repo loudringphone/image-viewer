@@ -4,17 +4,26 @@ require 'json'
 class VisitorChannel < ApplicationCable::Channel
   def subscribed
     stream_from "visitor_channel_#{params[:id]}"
-    update_user_count(1)
+    update_PostgreSQL_user_count(1)
+    update_Redis_user_count(1)
   end
 
   def unsubscribed
     stop_stream_from "visitor_channel_#{params[:id]}"
-    update_user_count(-1)
+    update_PostgreSQL_user_count(-1)
+    update_Redis_user_count(-1)
   end
 
   private
 
-  def update_user_count(change)
+  def update_PostgreSQL_user_count(change)
+    Image.transaction do
+      image = Image.lock.find(params[:id])
+      image.update!(current_views: image.current_views + change)
+    end
+  end
+
+  def update_Redis_user_count(change)
     new_lock = SecureRandom.uuid
     user_count_hash = locking(new_lock)
     REDIS.multi do |multi|
