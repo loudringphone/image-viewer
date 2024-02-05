@@ -45,7 +45,7 @@ export default class extends Controller {
       })
       .then(data => {
         let html = '<tbody>'
-        html = html + data.map(image => `
+        html = html + data.reverse().map(image => `
           <tr>
             <td><a href="/images/${image.id}"><img  class="h-[50px]" src="${image.attachment.url}" alt="${image.title}"></a></td>
             <td><a href="/images/${image.id}">${image.title}</a></td>

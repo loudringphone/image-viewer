@@ -9,13 +9,18 @@ class ImagesController < ApplicationController
   end
 
   def show
-    @image = Image.find(params[:id])
-    return redirect_to images_path unless @image
+    image_id = params[:id]
+    increment_views(image_id)
+    @image = Image.find(image_id)
     user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
     @user_count = JSON.parse(user_count_json)["user_count"]
     @user_count = 1 if @user_count === 0
     @previous_image = Image.previous_image(@image.created_at)
     @next_image = Image.next_image(@image.created_at)
+
+    respond_to do |format|
+      format.html { render layout: !request.xhr? } # Disable layout if it's an AJAX request
+    end
 
   rescue ActiveRecord::RecordNotFound
     flash[:notice] = "Image with ID #{params[:id]} not found"
@@ -67,11 +72,28 @@ class ImagesController < ApplicationController
     render json: user_count
   end
 
+  def increment_views(image_id)
+    Image.transaction do
+      image = Image.lock.find(image_id)
+      image.update!(current_views: image.current_views + 1)
+    end
+  rescue ActiveRecord::RecordNotFound
+  rescue ActiveRecord::Deadlocked
+  end
+
+  def decrement_views
+    Image.transaction do
+      image = Image.lock.find(params[:id])
+      image.update!(current_views: image.current_views - 1)
+    end
+  rescue ActiveRecord::RecordNotFound
+  rescue ActiveRecord::Deadlocked
+  end
 
   private
 
   def image_params
-    params.require(:image).permit(:title, :attachment, :description)
+    params.require(:image).permit(:title, :attachment, :description, :current_views)
   end
 
   def verify_ajax_request
