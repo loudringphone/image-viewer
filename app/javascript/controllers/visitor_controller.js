@@ -17,8 +17,7 @@ export default class extends Controller {
       msgElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    this.fetchVisitorCount()
-
+    // this.fetchVisitorCount()
     window.addEventListener('turbo:before-cache', this.handleBeforeCache)
 
     this.subscription = consumer.subscriptions.create(
@@ -57,9 +56,7 @@ export default class extends Controller {
     })
     .then(response => response.json())
     .then(data => {
-      let userCount = data.length;
-      const message = `${userCount} ${userCount !== 1 ? 'users are' : 'user is'} currently viewing this image.`;
-      msgElement.textContent = message
+      countElement.textContent = data
       return data
     })
     .catch(error => {

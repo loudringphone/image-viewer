@@ -17,6 +17,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_01_094458) do
     t.datetime "uploaded_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description"
+    t.text "current_views", default: [], array: true
   end
 
 end
