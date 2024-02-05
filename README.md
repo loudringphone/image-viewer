@@ -26,8 +26,8 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 - `rails s`
 - `redis-server`
 
-## User View Tracking with `hotwired/stimulus` and `actioncable`
-In this project, I've explored the integration of `hotwired/stimulus` with `actioncable`, which proved to be an engaging exercise. Utilizing `actioncable` to track user views was initially more challenging than expected.
+## User View Tracking with `Stimulus` and `Action Cable`
+In this project, I've explored the integration of `Action Cable`, which is part of the 'Hotwire' framework, with `Stimulus`, which proved to be an engaging exercise. Utilising `Action Cable` to track user views was initially more challenging than expected.
 
 Initially, I attempted to implement user tracking by creating a User model and assigning cookies to users. This approach involved storing attributes like image_last_viewed and image_last_seen. While straightforward, I found it to be somewhat inefficient. I created a scope in the image model to retrieve users viewing a particular image within a set timeframe, say, 5 seconds. However, I later realized this approach was not optimal.
 
@@ -38,7 +38,7 @@ scope :viewed_image_within_5_sec, ->(image_id) {
 }
 ```
 
-Upon further exploration, I discovered actioncable, a gem that facilitates the creation of channels for broadcasting data to users subscribed to those channels. Initially, I faced challenges configuring actioncable with Redis, but with perseverance, I managed to configure both server-side and client-side channels effectively. I implemented functionality such that when a user lands on an image, their count increases by 1, and when they navigate away or close the browser, their count decreases by 1. With thorough testing and debugging, I successfully implemented this feature, which I consider a significant improvement over my initial attempt.
+Upon further exploration, I discovered `Action Cable`, a gem that facilitates the creation of channels for broadcasting data to users subscribed to those channels. Initially, I faced challenges configuring `Action Cable` with `Redis`, but with perseverance, I managed to configure both server-side and client-side channels effectively. I implemented functionality such that when a user lands on an image, their count increases by 1, and when they navigate away or close the browser, their count decreases by 1. With thorough testing and debugging, I successfully implemented this feature, which I consider a significant improvement over my initial attempt.
 
 ```
 app/channels/visitor_channel.rb
@@ -53,7 +53,7 @@ def unsubscribed
 end
 ```
 
-Thirdly, as I was first learning how to use `actioncable`, I was not confident about the accuracy of view tracking, there I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone and both this method and the previous one could have concurrency issues as the race condition may occur. It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
+Thirdly, as I was first learning how to use `Action Cable`, I was not confident about the accuracy of view tracking, there I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone and both this method and the previous one could have concurrency issues as the race condition may occur. It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
 
 ```
 app/channels/application_cable/connection.rb (on branch cookie_count)
@@ -73,7 +73,7 @@ def update_user_count(change)
     user_count += change
     user_count_hash = {'lock': nil, 'user_count': user_count}
     multi.set("user_count_#{params[:id]}", user_count_hash.to_json)
-    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
+    Action Cable.server.broadcast("visitor_channel_#{params[:id]}", { msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
   end
 end
 
@@ -108,24 +108,22 @@ end
 ```
 
 
-Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `hotwired/stimulus`, `actioncable` and `Redis`.
+Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
 
-### `hotwire` with `turbo`
-I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I've also added the view count using `Hotwire` with Turobo, which is part the `Hotwire` framework. I chose to store these view counts in SQLite3 for simplicity. However, I've encountered occasional locking issues with SQLite3, which may impact the accuracy of the view counts. On the other hand, 'Redis' can handle the concurrency issue much better.
-I came across stimulus few month ago at RORSYD meetup and I checked up their website at that time too, so I have always thought that stimulus is part of hotwire and now I just realised they are created by the same team and even they say `Stimulus` and `Turbo` form the core of `Hotwire`. 
-https://stimulus.hotwired.dev/
+### `Hotwire` with `Turbo`
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I've also attempted to add the view count using `Hotwire` with `Turobo`. I chose to store these view counts in `PostgreSQL`. Lets see which of my implementations, 'Redis' or `PostgreSQL` can handle the concurrency issue better!
 
 ## Gem used
 
-#### `hotwired/stimulus`, `ActionCable` and `Redis`
-To track view counts, I've implemented a system where each user subscribing to an image channel increases the count by 1, leveraging `ActionCable` and `Redis`. When users leave, they're unsubscribed, decrementing the count. While `ActionCable` and `Redis` manage count records, the subscription and unsubscription processes are facilitated by `ActionCable` and `hotwired/stimulus`.
+#### `Action Cable`, `Stimulus` and `Redis`
+To track view counts, I've implemented a system where each user subscribing to an image channel increases the count by 1, leveraging `Action Cable` and `Redis`. When users leave, they're unsubscribed, decrementing the count. While `Action Cable` and `Redis` manage count records, the subscription and unsubscription processes are facilitated by `Action Cable` and `Stimulus`.
 
 
 However, unexpected server shutdowns don't automatically unsubscribe users. To ensure accurate counts, I clear records when server is being initialised.
 
 
-Besides dynamically displaying view counts, when an image is created or destroyed, the image list on the index page would automatically be updated without the need of refreshing the page. `ActionCable` would also broadcast a message that would be shown on the index page indicating which image has been created or destroyed. Additionally, if an user is on the image page when it's destroyed, they would also be redirected back to the index with an alert prompt indicating the deletion.
+Besides dynamically displaying view counts, when an image is created or destroyed, the image list on the index page would automatically be updated without the need of refreshing the page. `Action Cable` would also broadcast a message that would be shown on the index page indicating which image has been created or destroyed. Additionally, if an user is on the image page when it's destroyed, they would also be redirected back to the index with an alert prompt indicating the deletion.
 
 #### `CarrierWave`
 To prevent image attachments from being pushed to Git, added the following to `.gitignore`: `public/uploads/tmp/*` and `public/uploads/image/attachment/*`. This ensures that files in these directories are not included in version control.
@@ -148,4 +146,4 @@ I've utilised `Hotwire` to elevate user experience with seamless page updates. W
 To maintain clarity in my Git workflow, I utilise feature branches, each dedicated to significant gem integrations or critical functionalities. While the goal is to focus solely on the designated branch, occasional work on unrelated branches may occur. This approach ensures focused development, with changes seamlessly integrated into the main branch upon completion.
 
 ## Conclusion
-Thank you for considering this take-home assignment. Developing this application has been an enriching experience, allowing me to deepen my understanding of `Hotwire`, `actioncable`, and real-time user interaction. I look forward to further refining and expanding this project in the future. If you have any questions or feedback, please don't hesitate to reach out.
+Thank you for considering this take-home assignment. Developing this application has been an enriching experience, allowing me to deepen my understanding of `Hotwire`, `Action Cable`, and real-time user interaction. I look forward to further refining and expanding this project in the future. If you have any questions or feedback, please don't hesitate to reach out.
