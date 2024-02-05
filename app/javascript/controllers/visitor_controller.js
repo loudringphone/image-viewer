@@ -39,14 +39,17 @@ export default class extends Controller {
             alert('This image has been deleted. You will now be redirected to the home page.')
             return window.location.href = '/';
           }
-          const nextImgMsg = /Next image (\d+) has been created/;
-          const nextImg = nextImgMsg.exec(data.msg);
-          console.log(nextImg)
-          if (nextImg) {
-            const anchor = document.createElement('a');
+          if (data.code == 'next') {
+            const next = document.querySelector('#next')
+            if (next) {
+              next.remove()
+            }
+            if (data.img_id) {
+              console.log(data.img_id)
+              const anchor = document.createElement('a');
             anchor.id = 'next';
             anchor.classList.add('cursor-pointer', 'ml-auto');
-            anchor.href = `/images/${nextImg[1]}`;
+            anchor.href = `/images/${data.img_id}`;
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
             svg.setAttribute('viewBox', '0 0 24 24');
@@ -59,6 +62,33 @@ export default class extends Controller {
             span.textContent = 'Next';
             anchor.appendChild(span);
             navElement.appendChild(anchor);
+            }
+          }
+          if (data.code == 'previous') {
+            const previous = document.querySelector('#previous')
+            if (previous) {
+              previous.remove()
+            }
+            if (data.img_id) {
+              console.log(data.img_id)
+              const anchor = document.createElement('a');
+              anchor.id = 'previous';
+              anchor.classList.add('cursor-pointer', 'mr-auto');
+              anchor.href = `/images/${data.img_id}`;
+              const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+              svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+              svg.setAttribute('viewBox', '0 0 24 24');
+              const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+              path.setAttribute('d', 'M21 8H11V5a1 1 0 0 0-1.707-.707l-7 7a1 1 0 0 0 0 1.414l7 7A1 1 0 0 0 11 19v-3h10a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1z');
+              path.style.fill = '#ccc';
+              svg.appendChild(path);
+              anchor.appendChild(svg);
+              const span = document.createElement('span');
+              span.textContent = 'Prev';
+              anchor.appendChild(span);
+              navElement.appendChild(anchor);
+            }
+            
           }
           this.fetchVisitorCount()
         },
