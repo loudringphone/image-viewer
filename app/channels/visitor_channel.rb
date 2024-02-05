@@ -4,17 +4,23 @@ require 'json'
 class VisitorChannel < ApplicationCable::Channel
   def subscribed
     stream_from "visitor_channel_#{params[:id]}"
-    update_PostgreSQL_user_count(1)
-    update_Redis_user_count(1)
+    update_user_counts(1)
   end
 
   def unsubscribed
     stop_stream_from "visitor_channel_#{params[:id]}"
-    update_PostgreSQL_user_count(-1)
-    update_Redis_user_count(-1)
+    update_user_counts(-1)
   end
 
   private
+
+  def update_user_counts(change)
+    update_PostgreSQL_user_count(change)
+    update_Redis_user_count(change)
+  rescue => e
+    puts "Error updating user counts: #{e.message}"
+    update_Redis_user_count(change)
+  end
 
   def update_PostgreSQL_user_count(change)
     Image.transaction do
@@ -38,7 +44,7 @@ class VisitorChannel < ApplicationCable::Channel
   def locking(new_lock)
     current_lock = new_lock
     user_count_hash = nil
-    retries = 3
+    retries = 30
     begin
       until !current_lock || retries <= 0
         user_count_json = REDIS.get("user_count_#{params[:id]}") || {'lock': nil, 'user_count': 0}.to_json

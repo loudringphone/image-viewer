@@ -9,7 +9,7 @@ RSpec.describe 'images/show', type: :feature, js: true do
     expect(page).to have_content(images.first.title)
     expect(page).to have_selector('img')
     expect(page).to have_content('Redis: 1')
-    # expect(page).to have_content('PostgreSQL: 1')
+    expect(page).to have_content('PostgreSQL: 1')
     expect(page).to have_selector('#next')
     expect(page).not_to have_selector('#previous')
   end
