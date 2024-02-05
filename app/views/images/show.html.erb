@@ -7,8 +7,8 @@
 >
   <h1 class='viewer-title text-l'> Medical Image Viewer <span >- Connected Users - Redis: <span data-visitor-target="count"><%= @user_count %></span> <%= render @image %> </span> </h1>
   <p class='text-xs text-gray-400'>Uploaded at: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></p>
-<div class='image-viewer flex my-4 gap-4'>
-    <div class='flex flex-col'>
+<div class='image-viewer flex my-4 gap-4 flex-flow-wrap'>
+    <div class='flex flex-col h-[350px]'>
       <img class="ml-auto mr-auto w-[300px]" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
       <div class="flex my-2 text-2xl text-gray-400 h-[16px]" id='img-nav' data-visitor-target="nav">
         <% if @previous_image %>
@@ -25,7 +25,7 @@
         <% end %>
       </div>
     </div>
-    <div class='flex flex-col h-[inherit]'>
+    <div class='flex flex-col'>
       <h1 class="text-red-400 font-bold text-2xl max-w-[350px] mb-4">Title: <%= @image.title %></h1>
       <p class="max-w-[250px]"><%= @image.description %></p>
     </div>

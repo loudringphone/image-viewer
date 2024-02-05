@@ -17,6 +17,9 @@
  .text-last-center{
   text-align-last: center;
  }
+ .flex-flow-wrap {
+  flex-flow: wrap;
+ }
 
  @media (max-width: 599px) {
   header {
