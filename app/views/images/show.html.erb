@@ -1,6 +1,9 @@
 <%= turbo_stream_from :images %>
-
-
+<% if !flash[:alert].blank? %>
+  <div id='notice' class='text-sm text-red-600'>
+      <%= flash[:alert] %>
+  </div>
+<% end %>
 <div
   data-controller='visitor'
   data-image-id="<%= @image.id %>"

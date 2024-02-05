@@ -4,6 +4,10 @@ class ImagesController < ApplicationController
   before_action :verify_ajax_request, only: [:images_json]
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
+  rescue_from SQLite3::BusyException do |exception|
+    flash[:alert] = "Sorry, the database is currently busy. Please try again later."
+  end
+
   def index
     @images = Image.order(created_at: :desc)
   end
@@ -17,10 +21,6 @@ class ImagesController < ApplicationController
     @user_count = 1 if @user_count === 0
     @previous_image = Image.previous_image(@image.created_at)
     @next_image = Image.next_image(@image.created_at)
-
-    respond_to do |format|
-      format.html { render layout: !request.xhr? } # Disable layout if it's an AJAX request
-    end
 
   rescue ActiveRecord::RecordNotFound
     flash[:notice] = "Image with ID #{params[:id]} not found"
