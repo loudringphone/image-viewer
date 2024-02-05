@@ -15,8 +15,9 @@ class ImagesController < ApplicationController
   def show
     image_id = params[:id]
     @image = Image.find(image_id)
-    user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
-    @user_count = JSON.parse(user_count_json)["user_count"]
+    # user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
+    # @user_count = JSON.parse(user_count_json)["user_count"]
+    @user_count = REDIS.get("user_count_#{params[:id]}") || 0
     @user_count = 1 if @user_count === 0
     @previous_image = Image.previous_image(@image.created_at)
     @next_image = Image.next_image(@image.created_at)
@@ -35,7 +36,8 @@ class ImagesController < ApplicationController
     if @image.save
       previous_image = Image.previous_image(@image.created_at)
       ActionCable.server.broadcast("visitor_channel_#{previous_image.id}", { code: "next", img_id: @image.id, msg: "Next image #{@image.id} has been created."}) if previous_image
-      REDIS.set("user_count_#{@image.id}", {lock: nil, user_count: 0}.to_json)
+      REDIS.set("user_count_#{@image.id}", 0)
+      # REDIS.set("user_count_#{@image.id}", {lock: nil, user_count: 0}.to_json)
       ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been created."})
       redirect_to images_path, notice: "#{@image.title} was successfully uploaded."
     else
@@ -71,8 +73,10 @@ class ImagesController < ApplicationController
 
   def user_count
     image_id = params[:id]
-    user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
-    user_count = JSON.parse(user_count_json)
+    # user_count_json = REDIS.get("user_count_#{params[:id]}") || {user_count: 0}.to_json
+    # user_count = JSON.parse(user_count_json)
+    user_count = REDIS.get("user_count_#{params[:id]}") || 0
+
     render json: user_count
   end
 

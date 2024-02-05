@@ -100,8 +100,9 @@ export default class extends Controller {
     return fetch(`/images/${imageId}/user_count`)
     .then(response => response.json())
     .then(data => {
-      countElement.textContent = data.user_count
-      return data
+      // countElement.textContent = data.user_count
+      // countElement.textContent = data.user_count
+      countElement.textContent = data
     })
     .catch(error => {
       console.error("Error fetching user count:", error);
