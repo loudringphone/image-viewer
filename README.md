@@ -110,6 +110,12 @@ end
 
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `hotwired/stimulus`, `actioncable` and `Redis`.
 
+
+### `hotwire` with `turbo`
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I've also added the view count using `Hotwire` with Turobo, which is part the `Hotwire` framework. I chose to store these view counts in SQLite3 for simplicity. However, I've encountered occasional locking issues with SQLite3, which may impact the accuracy of the view counts. On the other hand, 'Redis' can handle the concurrency issue much better.
+I came across stimulus few month ago at RORSYD meetup and I checked up their website at that time too, so I have always thought that stimulus is part of hotwire and now I just realised they are created by the same team and even they say `Stimulus` and `Turbo` form the core of `Hotwire`. 
+https://stimulus.hotwired.dev/
+
 ## Gem used
 
 #### `hotwired/stimulus`, `ActionCable` and `Redis`
