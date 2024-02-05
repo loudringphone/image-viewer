@@ -4,9 +4,9 @@ class ImagesController < ApplicationController
   before_action :verify_ajax_request, only: [:images_json]
   skip_before_action :verify_authenticity_token, only: [:destroy, :show]
 
-  rescue_from SQLite3::BusyException do |exception|
-    flash[:alert] = "Sorry, the database is currently busy. Please try again later."
-  end
+  # rescue_from SQLite3::BusyException do |exception|
+  #   flash[:alert] = "Sorry, the database is currently busy. Please try again later."
+  # end
 
   def index
     @images = Image.order(created_at: :desc)
