@@ -7,4 +7,3 @@ keys_to_delete = REDIS.keys("user_count_*")
 keys_to_delete.each do |key|
   REDIS.del(key)
 end
-
