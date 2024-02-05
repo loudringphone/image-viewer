@@ -9,16 +9,6 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 - `bundle install`
 - `rake assets:precompile`
 
-##### Installing Redis (if needed)
-###### On Linux
-- `wget http://download.redis.io/redis-stable.tar.gz`
-- `tar xvzf redis-stable.tar.gz`
-- `cd redis-stable`
-- `make`
-- `make install`
-###### On Mac
-- `brew install redis`
-
 ### Starting the servers
 - `./bin/setup`
 - `rails db:migrate`
