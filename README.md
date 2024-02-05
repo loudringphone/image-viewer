@@ -26,7 +26,7 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 - `rails s`
 - `redis-server`
 
-## User View Tracking with `Stimulus` and `Action Cable`
+## User View Tracking with `Stimulus` and `Action Cable` and `Redis`
 In this project, I've explored the integration of `Action Cable`, which is part of the 'Hotwire' framework, with `Stimulus`, which proved to be an engaging exercise. Utilising `Action Cable` to track user views was initially more challenging than expected.
 
 Initially, I attempted to implement user tracking by creating a User model and assigning cookies to users. This approach involved storing attributes like image_last_viewed and image_last_seen. While straightforward, I found it to be somewhat inefficient. I created a scope in the image model to retrieve users viewing a particular image within a set timeframe, say, 5 seconds. However, I later realized this approach was not optimal.
@@ -111,8 +111,8 @@ end
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
 
-### `Hotwire` with `Turbo`
-I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I've also attempted to add the view count using `Hotwire` with `Turobo`. I chose to store these view counts in `PostgreSQL`. Lets see which of my implementations, 'Redis' or `PostgreSQL` can handle the concurrency issue better!
+## User View Tracking with `Turbo`, `Action Cable`, `Stimulus` and `PostgreSQL`
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. I chose to store view counts in `PostgreSQL`. Lets see which of my implementations, 'Redis' or `PostgreSQL` can handle the concurrency issue better!
 
 ## Gem used
 
