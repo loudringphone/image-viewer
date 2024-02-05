@@ -88,7 +88,6 @@ export default class extends Controller {
               anchor.appendChild(span);
               navElement.appendChild(anchor);
             }
-            
           }
           this.fetchVisitorCount()
         },
