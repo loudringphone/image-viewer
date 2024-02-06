@@ -1,17 +1,5 @@
-<%= turbo_frame_tag dom_id(image), data: { turbo_temporary: true } do %>
-<span><%= image.current_views %></span>
+<%= turbo_stream_from :images %>
+
+<%= turbo_frame_tag dom_id(image) do %>
+<%= image.current_views %>
 <% end %>
-
-<script>
-  turboVisit = () => {
-    document.removeEventListener('turbo:load', turboVisit);
-    const location = window.Turbo.navigator.currentVisit.location.pathname;
-    const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
-    console.log(location, referrer);
-
-    if (location !== referrer) {
-      Turbo.visit(window.location.href);
-    }
-  };
-  document.addEventListener('turbo:load', turboVisit);
-</script>

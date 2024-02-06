@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import consumer from "channels/consumer"
-import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
-  static targets = ["nav", "count"];
+  static targets = ["nav", "count", "turboCount"];
 
   handleBeforeCache = () => {
     if (this.subscription) {
@@ -12,29 +11,58 @@ export default class extends Controller {
   };
 
   connect() {
+    const turboCountElement = this.turboCountTarget;
+    const mutationCallback = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        if (mutation.type === "childList") {
+          const addedNodes = mutation.addedNodes;
+
+          if (addedNodes.length > 0) {
+            const lastAddedNode = mutation.addedNodes[mutation.addedNodes.length - 1];
+            if (lastAddedNode instanceof Element && lastAddedNode.id.startsWith('image_')) {
+              clearTimeout(turboVisitTimeout);
+              console.log('The last added node has the element ID:', lastAddedNode.id);
+            }
+          }
+        }
+      }
+    };
+    const observer = new MutationObserver(mutationCallback);
+    observer.observe(turboCountElement, { childList: true });
+    const turboVisit = () => {
+      observer.disconnect();
+      const location = window.Turbo.navigator.currentVisit.location.pathname;
+      const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
+      console.log(location, referrer);
+      if (location !== referrer) {
+        Turbo.visit(window.location.href);
+      }
+    };
+    const turboVisitTimeout = setTimeout(turboVisit, 100);
+
+
     const navElement = this.navTarget;
     const countElement = this.countTarget;
     setTimeout(() => {
       countElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-    // this.fetchVisitorCount()
 
-    window.addEventListener('turbo:before-cache', this.handleBeforeCache)
+    window.addEventListener('turbo:before-cache', this.handleBeforeCache, { once: true })
 
     this.subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
       {
         connected: () => {
-          console.log(`Connected to VisitorChannel ${imageId}`);
+          // console.log(`Connected to VisitorChannel ${imageId}`);
         },
         disconnected: () => {
-          console.log(`Bye VisitorChannel ${imageId}`);
+          // console.log(`Bye VisitorChannel ${imageId}`);
           consumer.subscriptions.remove(this.subscription)
           window.removeEventListener('turbo:before-cache', this.handleBeforeCache)
         },
         received: (data) => {
-          console.log(data.msg)
+          // console.log(data.msg)
           if (data.user_count) {
             return countElement.textContent = data.user_count
           }
@@ -48,7 +76,7 @@ export default class extends Controller {
               next.remove()
             }
             if (data.img_id) {
-              console.log(data.img_id)
+              // console.log(data.img_id)
               const anchor = document.createElement('a');
             anchor.id = 'next';
             anchor.classList.add('cursor-pointer', 'ml-auto');
