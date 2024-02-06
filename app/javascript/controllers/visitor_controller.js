@@ -28,18 +28,20 @@ export default class extends Controller {
       }
     };
     const observer = new MutationObserver(mutationCallback);
-    observer.observe(turboCountElement, { childList: true });
     const turboVisit = () => {
       observer.disconnect();
-      const location = window.Turbo.navigator.currentVisit.location.pathname;
-      const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
-      console.log(location, referrer);
-      if (location !== referrer) {
-        Turbo.visit(window.location.href);
+      const currentVisit = window.Turbo.navigator.currentVisit
+      if (currentVisit.location) {
+        const location = currentVisit.location.pathname;
+        const referrer = currentVisit.referrer.pathname;
+        console.log(location, referrer);
+        if (location !== referrer) {
+          Turbo.visit(window.location.href);
+        }
       }
     };
     const turboVisitTimeout = setTimeout(turboVisit, 100);
-
+    observer.observe(turboCountElement, { childList: true });
 
     const navElement = this.navTarget;
     const countElement = this.countTarget;
