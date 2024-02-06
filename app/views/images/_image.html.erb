@@ -10,7 +10,7 @@
     console.log(location, referrer);
 
     if (location !== referrer) {
-      Turbo.visit(window.location.href, { action: 'replace' });
+      Turbo.visit(window.location.href);
     }
   };
   document.addEventListener('turbo:load', turboVisit);
