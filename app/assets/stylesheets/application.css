@@ -17,9 +17,6 @@
  .text-last-center{
   text-align-last: center;
  }
- .flex-flow-wrap {
-  flex-flow: wrap;
- }
 
  @media (max-width: 599px) {
   header {
@@ -35,6 +32,16 @@
     font-size: x-large;
     margin-right: 0;
   }
+  .image-viewer {
+    flex-direction: column;
+  }
+  .viewer-title {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 750px) {
   .image-viewer {
     flex-direction: column;
   }
