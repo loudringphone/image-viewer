@@ -67,13 +67,14 @@ Lastly I have come up an idea to provide a basic locking mechanism. it ensures e
 ```
 def update_user_count(change)
   new_lock = SecureRandom.uuid
-  user_count_hash = locking(new_lock)
-  REDIS.multi do |multi|
-    user_count = user_count_hash['user_count']
-    user_count += change
-    user_count_hash = {'lock': nil, 'user_count': user_count}
-    multi.set("user_count_#{params[:id]}", user_count_hash.to_json)
-    Action Cable.server.broadcast("visitor_channel_#{params[:id]}", { msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
+  if (locking(new_lock))
+    if change == 1
+      user_count = REDIS.incr("user_count_#{params[:id]}")
+    else
+      user_count = REDIS.decr("user_count_#{params[:id]}")
+    end
+    REDIS.set("user_count_#{params[:id]}_lock", "")
+    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { user_count:, msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
   end
 end
 
@@ -111,8 +112,26 @@ end
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
 
-## User View Tracking with `Turbo`, `Action Cable`, `Stimulus` and `PostgreSQL`
-I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. I chose to store view counts in `PostgreSQL`. Lets see which of my implementations, 'Redis' or `PostgreSQL` can handle the concurrency issue better!
+## User View Tracking with `Turbo` and `PostgreSQL`
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL`. However, I notice that turbo_frame would not update the value on the page the first time the page is visited because turbo does not have the cache yet, but I have got a ugly solution.
+
+```
+<script>
+  turboVisit = () => {
+    document.removeEventListener('turbo:load', turboVisit);
+    const location = window.Turbo.navigator.currentVisit.location.pathname;
+    const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
+    console.log(location, referrer);
+
+    if (location !== referrer) {
+      Turbo.visit(window.location.href);
+    }
+  };
+  document.addEventListener('turbo:load', turboVisit);
+</script>
+
+```
+This is ugly!
 
 ## Gem used
 
