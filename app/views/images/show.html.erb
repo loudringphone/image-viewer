@@ -8,7 +8,7 @@
   data-controller='visitor'
   data-image-id="<%= @image.id %>"
 >
-  <h1 class='viewer-title text-l'> Medical Image Viewer <span >- Connected Users - Redis: <span data-visitor-target="count"><%= @user_count %></span> <%= render @image %> </span>
+  <h1 class='viewer-title text-l'> Medical Image Viewer <span >- Connected Users - Redis: <span data-visitor-target="count"><%= @user_count %></span> PostgreSQL: <%= render @image %> </span>
    </h1>
   <p class='text-xs text-gray-400'>Uploaded at: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></p>
 <div class='image-viewer flex my-4 gap-4'>

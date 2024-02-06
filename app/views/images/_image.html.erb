@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(image), data: { turbo_temporary: true } do %>
-<span>PostgreSQL: <%= image.current_views %></span>
+<span><%= image.current_views %></span>
 <% end %>
 
 <script>
