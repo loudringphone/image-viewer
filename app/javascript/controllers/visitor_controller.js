@@ -30,14 +30,15 @@ export default class extends Controller {
     const observer = new MutationObserver(mutationCallback);
     const turboVisit = () => {
       observer.disconnect();
-      const currentVisit = window.Turbo.navigator.currentVisit
-      if (currentVisit.location) {
+      if (window.Turbo.navigator?.currentVisit?.location) {
         const location = currentVisit.location.pathname;
         const referrer = currentVisit.referrer.pathname;
         console.log(location, referrer);
         if (location !== referrer) {
           Turbo.visit(window.location.href);
         }
+      } else {
+        Turbo.visit(window.location.href);
       }
     };
     const turboVisitTimeout = setTimeout(turboVisit, 100);
