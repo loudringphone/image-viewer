@@ -77,7 +77,7 @@ export default class extends Controller {
       })
       .catch(error => {
         console.error("Error fetching JSON data:", error);
-        return null; // Return null or handle the error as needed
+        return null;
       });
   }
 }

@@ -44,7 +44,7 @@ class ImagesController < ApplicationController
     @image = Image.find(params[:id])
     if @image.destroy
       ActionCable.server.broadcast('image_channel', { msg: "#{@image.title} has been destroyed."})
-      ActionCable.server.broadcast("visitor_channel_#{@image.id}", { msg: "Image #{@image.id} has been destroyed."})
+      ActionCable.server.broadcast("visitor_channel_#{@image.id}", { code: "destroy", msg: "Image #{@image.id} has been destroyed."})
       previous_image = Image.previous_image(@image.created_at)
       if previous_image
         new_next_image = Image.next_image(previous_image.created_at)

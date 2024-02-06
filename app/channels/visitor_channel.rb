@@ -38,7 +38,7 @@ class VisitorChannel < ApplicationCable::Channel
         user_count = REDIS.decr("user_count_#{params[:id]}")
       end
       REDIS.set("user_count_#{params[:id]}_lock", "")
-      ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
+      ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { user_count:, msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
     end
   end
 

@@ -35,7 +35,10 @@ export default class extends Controller {
         },
         received: (data) => {
           console.log(data.msg)
-          if (data.msg === `Image ${imageId} has been destroyed.`) {
+          if (data.user_count) {
+            return countElement.textContent = data.user_count
+          }
+          if (data.code == 'destroy') {
             alert('This image has been deleted. You will now be redirected to the home page.')
             return window.location.href = '/';
           }
@@ -89,23 +92,8 @@ export default class extends Controller {
               navElement.appendChild(anchor);
             }
           }
-          this.fetchVisitorCount()
         },
       }
     );
-  }
-  async fetchVisitorCount () {
-    const countElement = this.countTarget;
-    const imageId = this.element.dataset.imageId;
-    return fetch(`/images/${imageId}/user_count`)
-    .then(response => response.json())
-    .then(data => {
-      // countElement.textContent = data.user_count
-      // countElement.textContent = data.user_count
-      countElement.textContent = data
-    })
-    .catch(error => {
-      console.error("Error fetching user count:", error);
-    });
   }
 }
