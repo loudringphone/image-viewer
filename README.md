@@ -113,7 +113,7 @@ Overall, through experimentation and iteration, I've achieved a robust solution 
 
 
 ## User View Tracking with `Turbo` and `PostgreSQL`
-I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL`. However, I notice that turbo_frame would not update the value on the page the first time the page is visited because turbo does not have the cache yet, but I have got a ugly solution.
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL`. However, I notice that turbo_frame would not update the value on the page the first time the page is visited because turbo does not have the cache yet, but I have got a ugly solution using `Turbo.visit()` together with `MutationObserver`.
 
 ```
   const turboVisit = () => {
