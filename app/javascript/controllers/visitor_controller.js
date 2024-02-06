@@ -12,37 +12,42 @@ export default class extends Controller {
 
   connect() {
     const turboCountElement = this.turboCountTarget;
-    const mutationCallback = (mutationList, observer) => {
-      for (const mutation of mutationList) {
-        if (mutation.type === "childList") {
-          const addedNodes = mutation.addedNodes;
+    document.addEventListener('turbo:load', function() {
+      const mutationCallback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+          if (mutation.type === "childList") {
+            const addedNodes = mutation.addedNodes;
 
-          if (addedNodes.length > 0) {
-            const lastAddedNode = mutation.addedNodes[mutation.addedNodes.length - 1];
-            if (lastAddedNode instanceof Element && lastAddedNode.id.startsWith('image_')) {
-              clearTimeout(turboVisitTimeout);
-              console.log('The last added node has the element ID:', lastAddedNode.id);
+            if (addedNodes.length > 0) {
+              const lastAddedNode = mutation.addedNodes[mutation.addedNodes.length - 1];
+              if (lastAddedNode instanceof Element && lastAddedNode.id.startsWith('image_')) {
+                clearTimeout(turboVisitTimeout);
+                console.log('The last added node has the element ID:', lastAddedNode.id);
+              }
             }
           }
         }
-      }
-    };
-    const observer = new MutationObserver(mutationCallback);
-    const turboVisit = () => {
-      observer.disconnect();
-      if (window.Turbo.navigator?.currentVisit?.location) {
-        const location = currentVisit.location.pathname;
-        const referrer = currentVisit.referrer.pathname;
-        console.log(location, referrer);
-        if (location !== referrer) {
+      };
+
+      const observer = new MutationObserver(mutationCallback);
+      const turboVisit = () => {
+        observer.disconnect();
+        const turboNavigator = window.Turbo.navigator
+        if (turboNavigator.currentVisit) {
+          const location = turboNavigator.currentVisit.location.pathname;
+          const referrer = turboNavigator.currentVisit.referrer.pathname;
+          console.log(location, referrer);
+          if (location !== referrer) {
+            Turbo.visit(window.location.href);
+          }
+        } else {
           Turbo.visit(window.location.href);
         }
-      } else {
-        Turbo.visit(window.location.href);
-      }
-    };
-    const turboVisitTimeout = setTimeout(turboVisit, 100);
-    observer.observe(turboCountElement, { childList: true });
+      };
+      const turboVisitTimeout = setTimeout(turboVisit, 150);
+      observer.observe(turboCountElement, { childList: true });
+    }, { once: true});
+
 
     const navElement = this.navTarget;
     const countElement = this.countTarget;
@@ -126,5 +131,6 @@ export default class extends Controller {
         },
       }
     );
+    
   }
 }
