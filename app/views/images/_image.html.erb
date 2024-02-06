@@ -1,3 +1,17 @@
-<%= turbo_frame_tag dom_id(image) do %>
+<%= turbo_frame_tag dom_id(image), data: { turbo_temporary: true } do %>
 <span>PostgreSQL: <%= image.current_views %></span>
 <% end %>
+
+<script>
+  turboVisit = () => {
+    document.removeEventListener('turbo:load', turboVisit);
+    const location = window.Turbo.navigator.currentVisit.location.pathname;
+    const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
+    console.log(location, referrer);
+
+    if (location !== referrer) {
+      Turbo.visit(window.location.href, { action: 'replace' });
+    }
+  };
+  document.addEventListener('turbo:load', turboVisit);
+</script>
