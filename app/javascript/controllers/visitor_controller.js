@@ -4,12 +4,6 @@ import consumer from "channels/consumer"
 export default class extends Controller {
   static targets = ["nav", "count", "turboCount"];
 
-  handleBeforeCache = () => {
-    if (this.subscription) {
-      this.subscription.disconnected();
-    }
-  };
-
   connect() {
     // const turboCountElement = this.turboCountTarget;
     // document.addEventListener('turbo:load', function() {
@@ -52,14 +46,13 @@ export default class extends Controller {
     
     const navElement = this.navTarget;
     const countElement = this.countTarget;
+    const turboCountElement = document.querySelector('turbo-cable-stream-source')
+    console.log("Content loaded:", turboCountElement);
     setTimeout(() => {
       countElement.style.visibility = 'visible'
     }, 275);
     const imageId = this.element.dataset.imageId;
-
-    window.addEventListener('turbo:before-cache', this.handleBeforeCache, { once: true })
-
-    this.subscription = consumer.subscriptions.create(
+    const subscription = consumer.subscriptions.create(
       { channel: "VisitorChannel", id: imageId },
       {
         connected: () => {
@@ -67,8 +60,14 @@ export default class extends Controller {
         },
         disconnected: () => {
           console.log(`Bye VisitorChannel ${imageId}`);
-          consumer.subscriptions.remove(this.subscription)
+          consumer.subscriptions.remove(subscription)
           window.removeEventListener('turbo:before-cache', this.handleBeforeCache)
+        },
+        incrementCounts: () => {
+          console.log('1111111')
+        },
+        decrementCounts: () => {
+
         },
         received: (data) => {
           // console.log(data.msg)
@@ -132,6 +131,11 @@ export default class extends Controller {
         },
       }
     );
-    
+    const handleBeforeCache = () => {
+      if (subscription) {
+        subscription.disconnected();
+      }
+    };
+    document.addEventListener('turbo:before-cache', handleBeforeCache, { once: true })
   }
 }

@@ -9,8 +9,8 @@
 
     <%= stylesheet_link_tag "application" %>
     <%= javascript_importmap_tags %>
+    <%= turbo_stream_from :images %>
   </head>
-
   <body class="w-100">
      <%= render 'layouts/header' %>
     <main class="container w-[80vw] mx-auto mt-6 flex flex-col items-center">
