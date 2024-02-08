@@ -8,8 +8,8 @@
     <%= stylesheet_link_tag "tailwind", "inter-font", rel: "preload", as: "style", onload: "this.onload=null;this.rel='stylesheet'" %>
 
     <%= stylesheet_link_tag "application" %>
-    <%= turbo_stream_from :images %>
     <%= javascript_importmap_tags %>
+    <%= turbo_stream_from :images %>
   </head>
   <body class="w-100">
      <%= render 'layouts/header' %>
