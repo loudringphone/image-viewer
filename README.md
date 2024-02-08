@@ -1,32 +1,38 @@
 # README
 
 ## Introduction
+
 Welcome to the this `Rails` image viewer application! This README provides a comprehensive overview of the project, including setup instructions, implementation details, and usage guidelines.
 
 #### How to run
-- `git clone git@github.com:loudringphone/medical-image-viewer.git`
-- `cd medical-image-viewer`
+
+- `git clone git@github.com:loudringphone/image-viewer.git`
+- `cd image-viewer`
 - `bundle install`
 - `rake assets:precompile`
 
 ##### Installing Redis (if needed)
+
 ###### On Linux
+
 - `wget http://download.redis.io/redis-stable.tar.gz`
 - `tar xvzf redis-stable.tar.gz`
 - `cd redis-stable`
 - `make`
 - `make install`
+
 ###### On Mac
+
 - `brew install redis`
 
 ### Starting the servers
+
 - `./bin/setup`
-- `rails db:migrate`
-- `rails db:seed`
 - `rails s`
 - `redis-server`
 
 ## User View Tracking with `Stimulus` and `Action Cable` and `Redis`
+
 In this project, I've explored the integration of `Action Cable`, which is part of the 'Hotwire' framework, with `Stimulus`, which proved to be an engaging exercise. Utilising `Action Cable` to track user views was initially more challenging than expected.
 
 Initially, I attempted to implement user tracking by creating a User model and assigning cookies to users. This approach involved storing attributes like image_last_viewed and image_last_seen. While straightforward, I found it to be somewhat inefficient. I created a scope in the image model to retrieve users viewing a particular image within a set timeframe, say, 5 seconds. However, I later realized this approach was not optimal.
@@ -108,11 +114,10 @@ def locking(new_lock)
 end
 ```
 
-
 Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
 
-
 ## User View Tracking with `Turbo` and `PostgreSQL`
+
 I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL`. However, I notice that turbo_frame would not update the value on the page the first time the page is visited because turbo does not have the cache yet, but I have got a ugly solution using `Turbo.visit()` together with `MutationObserver`.
 
 ```
@@ -124,23 +129,25 @@ I've come to realise that while `Turbo Streams` is a component of the `Hotwire` 
     }
   };
 ```
+
 This is ugly!
 
 ## Gem used
 
 #### `Action Cable`, `Stimulus` and `Redis`
+
 To track view counts, I've implemented a system where each user subscribing to an image channel increases the count by 1, leveraging `Action Cable` and `Redis`. When users leave, they're unsubscribed, decrementing the count. While `Action Cable` and `Redis` manage count records, the subscription and unsubscription processes are facilitated by `Action Cable` and `Stimulus`.
 
-
 However, unexpected server shutdowns don't automatically unsubscribe users. To ensure accurate counts, I clear records when server is being initialised.
-
 
 Besides dynamically displaying view counts, when an image is created or destroyed, the image list on the index page would automatically be updated without the need of refreshing the page. `Action Cable` would also broadcast a message that would be shown on the index page indicating which image has been created or destroyed. Additionally, if an user is on the image page when it's destroyed, they would also be redirected back to the index with an alert prompt indicating the deletion.
 
 #### `CarrierWave`
+
 To prevent image attachments from being pushed to Git, added the following to `.gitignore`: `public/uploads/tmp/*` and `public/uploads/image/attachment/*`. This ensures that files in these directories are not included in version control.
 
 ## Quality and Testing
+
 To test the image models, I've utilised `shoulda-matchers` and `factory_bot` for efficient and readable tests. For verifying user interactions and HTML elements, `capybara` and `selenium-webdriver` were employed to ensure correctness in view pages. Although I encountered challenges in understanding how to test `action-cable`, I managed to do some basic testings. Given more time, I plan to delve deeper into testing with `action-cable` to enhance my skills and understanding further.
 
 After running tests, I've observed that temporary images persist, so I've implemented code to automatically delete them post-testing.
@@ -151,11 +158,14 @@ config.after(:suite) do
 end
 ```
 
-##  UI/UX
+## UI/UX
+
 I've utilised `Hotwire` to elevate user experience with seamless page updates. When new images are created or removed, the index page refreshes automatically. Additionally, on the new image page, the save button remains disabled until the user completes the title field and attaches an image. `Tailwind CSS` provides basic styling, including a dynamic header indicating the current page and responsive design adapting to screen width.
 
 ## Git Usage
+
 To maintain clarity in my Git workflow, I utilise feature branches, each dedicated to significant gem integrations or critical functionalities. While the goal is to focus solely on the designated branch, occasional work on unrelated branches may occur. This approach ensures focused development, with changes seamlessly integrated into the main branch upon completion.
 
 ## Conclusion
+
 Thank you for considering this take-home assignment. Developing this application has been an enriching experience, allowing me to deepen my understanding of `Hotwire`, `Action Cable`, and real-time user interaction. I look forward to further refining and expanding this project in the future. If you have any questions or feedback, please don't hesitate to reach out.
