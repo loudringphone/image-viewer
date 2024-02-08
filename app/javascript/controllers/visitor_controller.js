@@ -5,49 +5,8 @@ export default class extends Controller {
   static targets = ["nav", "count", "turboCount"];
 
   connect() {
-    // const turboCountElement = this.turboCountTarget;
-    // document.addEventListener('turbo:load', function() {
-    //   const turboNavigator = window.Turbo.navigator
-    //     if (turboNavigator.currentVisit) {
-    //       const location = turboNavigator.currentVisit.location.pathname;
-    //       const referrer = turboNavigator.currentVisit.referrer.pathname;
-    //       console.log(location, referrer);
-    //       if (location !== referrer) {
-    //       const mutationCallback = (mutationList, observer) => {
-    //         for (const mutation of mutationList) {
-    //           if (mutation.type === "childList") {
-    //             const addedNodes = mutation.addedNodes;
-
-    //             if (addedNodes.length > 0) {
-    //               const lastAddedNode = mutation.addedNodes[mutation.addedNodes.length - 1];
-    //               if (lastAddedNode instanceof Element && lastAddedNode.id.startsWith('image_')) {
-    //                 clearTimeout(turboVisitTimeout);
-    //                 console.log('The last added node has the element ID:', lastAddedNode.id);
-    //               }
-    //             }
-    //           }
-    //         }
-    //       };
-
-    //       const observer = new MutationObserver(mutationCallback);
-    //       const turboVisit = () => {
-    //         observer.disconnect();
-    //         return Turbo.visit(window.location.href);
-    //       };
-    //       const turboVisitTimeout = setTimeout(turboVisit, 150);
-    //       observer.observe(turboCountElement, { childList: true });
-    //     }
-    //   } else {
-    //     console.log('first visit')
-    //     return Turbo.visit(window.location.href);
-    //   }
-    // }, { once: true});
-
-    
     const navElement = this.navTarget;
     const countElement = this.countTarget;
-    const turboCountElement = document.querySelector('turbo-cable-stream-source')
-    console.log("Content loaded:", turboCountElement);
     setTimeout(() => {
       countElement.style.visibility = 'visible'
     }, 275);
@@ -61,16 +20,9 @@ export default class extends Controller {
         disconnected: () => {
           console.log(`Bye VisitorChannel ${imageId}`);
           consumer.subscriptions.remove(subscription)
-          window.removeEventListener('turbo:before-cache', this.handleBeforeCache)
-        },
-        incrementCounts: () => {
-          console.log('1111111')
-        },
-        decrementCounts: () => {
-
         },
         received: (data) => {
-          // console.log(data.msg)
+          console.log(data)
           if (data.user_count) {
             return countElement.textContent = data.user_count
           }

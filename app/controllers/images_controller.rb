@@ -11,8 +11,7 @@ class ImagesController < ApplicationController
   def show
     image_id = params[:id]
     @image = Image.find(image_id)
-    @user_count = REDIS.get("user_count_#{params[:id]}") || 0
-    @user_count = 1 if @user_count === 0
+    @user_count = REDIS.get("user_count_#{params[:id]}").to_i
     @previous_image = Image.previous_image(@image.created_at)
     @next_image = Image.next_image(@image.created_at)
 
