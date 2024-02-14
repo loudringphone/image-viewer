@@ -7,13 +7,13 @@
   data-controller='visitor'
   data-image-id="<%= @image.id %>"
 >
-  <h1 class='viewer-title text-l'> Image Viewer - Connected Users - Redis: <span data-visitor-target="count"><%= @user_count %></span> PostgreSQL: <%= render @image %>
+  <h1 class='viewer-title text-l'> Image Viewer - Connected Users - Redis: <span id='count'><%= @user_count %></span> PostgreSQL: <%= render @image %>
    </h1>
   <p class='text-xs text-gray-400'>Uploaded at: <%= @image.created_at.strftime("%d-%b-%y %H:%M:%S") %></p>
 <div class='image-viewer flex my-4 gap-4'>
     <div class='flex flex-col'>
       <img class="ml-auto mr-auto w-[300px]" src="<%= @image.attachment_url %>" alt="<%= @image.title %>">
-      <div class="flex my-2 text-2xl text-gray-400 h-auto" id='img-nav' data-visitor-target="nav">
+      <div class="flex my-2 text-2xl text-gray-400 h-auto" id='img-nav'>
         <% if @previous_image %>
           <a id='previous' class='cursor-pointer mr-auto' href="<%= image_path(@previous_image) %>">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 8H11V5a1 1 0 0 0-1.707-.707l-7 7a1 1 0 0 0 0 1.414l7 7A1 1 0 0 0 11 19v-3h10a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1z" style="fill:#ccc" data-name="Left"/></svg>

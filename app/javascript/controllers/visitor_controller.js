@@ -2,17 +2,13 @@ import { Controller } from "@hotwired/stimulus"
 import consumer from "channels/consumer"
 
 export default class extends Controller {
-  static targets = ["nav", "count", "turboCount"];
+  static targets = ["nav", "turboCount"];
 
   connect() {
-    const navElement = this.navTarget;
-    const countElement = this.countTarget;
-    setTimeout(() => {
-      countElement.style.visibility = 'visible'
-    }, 275);
     const imageId = this.element.dataset.imageId;
+    let subscription
     setTimeout(() => {
-      const subscription = consumer.subscriptions.create(
+      subscription = consumer.subscriptions.create(
         { channel: "VisitorChannel", id: imageId },
         {
           connected: () => {
@@ -25,6 +21,7 @@ export default class extends Controller {
           received: (data) => {
             console.log(data)
             if (data.user_count) {
+              const countElement = document.getElementById('count')
               return countElement.textContent = data.user_count
             }
             if (data.code == 'destroy') {
@@ -32,12 +29,11 @@ export default class extends Controller {
               return window.location.href = '/';
             }
             if (data.code == 'next') {
-              const next = document.querySelector('#next')
+              const next = document.getElementById('next')
               if (next) {
                 next.remove()
               }
               if (data.img_id) {
-                // console.log(data.img_id)
                 const anchor = document.createElement('a');
                 anchor.id = 'next';
                 anchor.classList.add('cursor-pointer', 'ml-auto');
@@ -53,11 +49,12 @@ export default class extends Controller {
                 const span = document.createElement('span');
                 span.textContent = 'Next';
                 anchor.appendChild(span);
+                const navElement = document.getElementById('img-nav')
                 navElement.appendChild(anchor);
               }
             }
             if (data.code == 'previous') {
-              const previous = document.querySelector('#previous')
+              const previous = document.getElementById('previous')
               if (previous) {
                 previous.remove()
               }
@@ -78,15 +75,16 @@ export default class extends Controller {
                 const span = document.createElement('span');
                 span.textContent = 'Prev';
                 anchor.appendChild(span);
+                const navElement = document.getElementById('img-nav')
                 navElement.appendChild(anchor);
               }
             }
           },
         }
       );
-    }, 0)
+    }, 750)
     const handleBeforeCache = () => {
-      if (subscription) {
+      if (subscription && JSON.parse(subscription.identifier).id == imageId) {
         subscription.disconnected();
       }
     };

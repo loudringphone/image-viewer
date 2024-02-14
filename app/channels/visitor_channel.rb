@@ -30,44 +30,44 @@ class VisitorChannel < ApplicationCable::Channel
   end
 
   def update_Redis_user_count(change)
-    new_lock = SecureRandom.uuid
-    if (locking(new_lock))
+    # new_lock = SecureRandom.uuid
+    # if (locking(new_lock))
       if change == 1
         user_count = REDIS.incr("user_count_#{params[:id]}")
       else
         user_count = REDIS.decr("user_count_#{params[:id]}")
       end
-      REDIS.set("user_count_#{params[:id]}_lock", "")
+      # REDIS.set("user_count_#{params[:id]}_lock", "")
       ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { user_count:, msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
-    end
+    # end
   end
 
-  def locking(new_lock)
-    current_lock = new_lock
-    lock = nil
-    retries = 50
-    begin
-      until current_lock.blank? || retries <= 0
-        lock = REDIS.get("user_count_#{params[:id]}_lock")
-        current_lock = lock
-        retries -= 1
+  # def locking(new_lock)
+  #   current_lock = new_lock
+  #   lock = nil
+  #   retries = 50
+  #   begin
+  #     until current_lock.blank? || retries <= 0
+  #       lock = REDIS.get("user_count_#{params[:id]}_lock")
+  #       current_lock = lock
+  #       retries -= 1
 
-      end
+  #     end
 
-      if retries <= 0
-        raise "Failed to acquire lock after multiple retries for user_count_#{params[:id]}"
-      end
+  #     if retries <= 0
+  #       raise "Failed to acquire lock after multiple retries for user_count_#{params[:id]}"
+  #     end
 
-      REDIS.set("user_count_#{params[:id]}_lock", new_lock)
-      lock = REDIS.get("user_count_#{params[:id]}_lock")
-      if lock != new_lock
-        locking(new_lock)
-      else
-        return true
-      end
-    rescue StandardError => e
-      puts "Error occurred: #{e.message}"
-      false
-    end
-  end
+  #     REDIS.set("user_count_#{params[:id]}_lock", new_lock)
+  #     lock = REDIS.get("user_count_#{params[:id]}_lock")
+  #     if lock != new_lock
+  #       locking(new_lock)
+  #     else
+  #       return true
+  #     end
+  #   rescue StandardError => e
+  #     puts "Error occurred: #{e.message}"
+  #     false
+  #   end
+  # end
 end
