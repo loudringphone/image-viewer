@@ -35,16 +35,8 @@ Welcome to the this `Rails` image viewer application! This README provides a com
 
 In this project, I've explored the integration of `Action Cable`, which is part of the 'Hotwire' framework, with `Stimulus`, which proved to be an engaging exercise. Utilising `Action Cable` to track user views was initially more challenging than expected.
 
-Initially, I attempted to implement user tracking by creating a User model and assigning cookies to users. This approach involved storing attributes like image_last_viewed and image_last_seen. While straightforward, I found it to be somewhat inefficient. I created a scope in the image model to retrieve users viewing a particular image within a set timeframe, say, 5 seconds. However, I later realized this approach was not optimal.
 
-```
-app/models/visitor.rb (now deprecated)
-scope :viewed_image_within_5_sec, ->(image_id) {
-  where("last_seen_at > ? AND image_last_viewed = ?", 5.seconds.ago, image_id)
-}
-```
-
-Upon further exploration, I discovered `Action Cable`, a gem that facilitates the creation of channels for broadcasting data to users subscribed to those channels. Initially, I faced challenges configuring `Action Cable` with `Redis`, but with perseverance, I managed to configure both server-side and client-side channels effectively. I implemented functionality such that when a user lands on an image, their count increases by 1, and when they navigate away or close the browser, their count decreases by 1. With thorough testing and debugging, I successfully implemented this feature, which I consider a significant improvement over my initial attempt.
+Upon exploration, I discovered `Action Cable`, a gem that facilitates the creation of channels for broadcasting data to users subscribed to those channels. Initially, I faced challenges configuring `Action Cable` with `Redis`, but with perseverance, I managed to configure both server-side and client-side channels effectively. I implemented functionality such that when a user lands on an image, their count increases by 1, and when they navigate away or close the browser, their count decreases by 1. With thorough testing and debugging, I successfully implemented this feature, which I consider a significant improvement over my initial attempt.
 
 ```
 app/channels/visitor_channel.rb
@@ -59,78 +51,40 @@ def unsubscribed
 end
 ```
 
-Thirdly, as I was first learning how to use `Action Cable`, I was not confident about the accuracy of view tracking, there I've introduced an alternative method centered on recording unique cookies within a set. Leveraging the uniqueness of cookies offers a more precise gauge of user views compared to simplistic incrementation. I've also implemented measures to secure access to the cookie count, restricting it to those with CSRF tokens for risk management purposes. Looking ahead, I recognize that cookie-based tracking may appear excessive for view counting alone and both this method and the previous one could have concurrency issues as the race condition may occur. It is also important to note that while the second method would count each separate tab as a distinct view, this third approach considers each separate browser instance, as tabs within the same browser share the same cookie, as a unique view.
-
-```
-app/channels/application_cable/connection.rb (on branch cookie_count)
-def current_user_cookie
-  cookies['user_id']
-end
-```
-
-Lastly I have come up an idea to provide a basic locking mechanism. it ensures exclusive access to view count update by acquiring a unique lock before performing counting. Utilising `Redis` for synchronization, it safeguards against concurrency issues by serializing access, thereby maintaining data integrity. Error handling further enhances reliability by gracefully managing potential failures during the locking process.
-
-```
-def update_user_count(change)
-  new_lock = SecureRandom.uuid
-  if (locking(new_lock))
-    if change == 1
-      user_count = REDIS.incr("user_count_#{params[:id]}")
-    else
-      user_count = REDIS.decr("user_count_#{params[:id]}")
-    end
-    REDIS.set("user_count_#{params[:id]}_lock", "")
-    ActionCable.server.broadcast("visitor_channel_#{params[:id]}", { user_count:, msg: "#{user_count}(#{change}) #{user_count == 1 ? 'user' : 'users'} on Visitor Channel #{params[:id]}"})
-  end
-end
-
-def locking(new_lock)
-  current_lock = new_lock
-  user_count_hash = nil
-  retries = 3
-  begin
-    until !current_lock || retries <= 0
-      user_count_json = REDIS.get("user_count_#{params[:id]}") || {'lock': nil, 'user_count': 0}.to_json
-      user_count_hash = JSON.parse(user_count_json)
-      current_lock = user_count_hash["lock"]
-      retries -= 1
-    end
-    if retries <= 0
-      raise "Failed to acquire lock after multiple retries for user_count_#{params[:id]}"
-    end
-    user_count_hash["lock"] = new_lock
-    REDIS.set("user_count_#{params[:id]}", user_count_hash.to_json)
-
-    user_count_hash = JSON.parse(REDIS.get("user_count_#{params[:id]}"))
-    if user_count_hash["lock"] != new_lock
-      locking(new_lock)
-    else
-      user_count_hash
-    end
-  rescue StandardError => e
-    puts "Error occurred: #{e.message}"
-    user_count_hash = {'lock': nil, 'user_count': 99999}
-  end
-end
-```
-
-Overall, through experimentation and iteration, I've achieved a robust solution for tracking user views, leveraging the combined power of `Stimulus`, `Action Cable` and `Redis`.
-
 ## User View Tracking with `Turbo` and `PostgreSQL`
 
-I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL`. However, I notice that turbo_frame would not update the value on the page the first time the page is visited because turbo does not have the cache yet, but I have got a ugly solution using `Turbo.visit()` together with `MutationObserver`.
+I've come to realise that while `Turbo Streams` is a component of the `Hotwire` framework, `Stimulus` is a separate JavaScript framework that is commonly used alongside `Hotwire`. Therefore for the purpose of the assignment, I would also like to try if I can do it with `Turbo`. This time I chose to store the view count for each image in `PostgreSQL` with `turbo_frame_tag`
 
 ```
-  const turboVisit = () => {
-    const location = window.Turbo.navigator.currentVisit.location.pathname;
-    const referrer = window.Turbo.navigator.currentVisit.referrer.pathname;
-    if (location !== referrer) {
-      Turbo.visit(window.location.href);
-    }
-  };
+<%= turbo_frame_tag dom_id(image) do %>
+  <span data-visitor-target='turboCount'><%= image.current_views %></span>
+<% end %>
 ```
 
-This is ugly!
+## Concurrency issues
+To handle the protential concurrency issues, I have setup the following:
+
+For Redis,
+```
+if change == 1
+  user_count = REDIS.incr("user_count_#{params[:id]}")
+else
+  user_count = REDIS.decr("user_count_#{params[:id]}")
+end
+```
+The `incr` and `decr` operations in Redis are atomic and they change the value stored at the specified key, and these operations are guaranteed to be atomic, meaning it will be executed as a single, indivisible operation.
+
+
+For PostgreSQL,
+```
+def update_PostgreSQL_user_count(change)
+  Image.transaction do
+    image = Image.lock.find(params[:id])
+    image.update!(current_views: image.current_views + change)
+  end
+end
+```
+This updates an image's view count, ensuring data consistency through a locked transaction, safeguarding against concurrent modifications.
 
 ## Gem used
 
